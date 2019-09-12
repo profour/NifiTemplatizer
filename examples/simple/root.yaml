@@ -47,6 +47,7 @@ components:
   id: bbfb226b-016c-1000-8d5e-95d3c69114da
   position: 1177,396
   properties:
+    newAttribute: ${uuid}
     test: asdf
     Store State: Store state locally
   inputs:
