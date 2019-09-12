@@ -7,7 +7,6 @@ dependencies:
         StandardHttpContextMap: org.apache.nifi.http.StandardHttpContextMap
     nifi-standard-nar:
       1.8.0:
-        GenerateFlowFile: org.apache.nifi.processors.standard.GenerateFlowFile
         HandleHttpRequest: org.apache.nifi.processors.standard.HandleHttpRequest
         HandleHttpResponse: org.apache.nifi.processors.standard.HandleHttpResponse
         LogAttribute: org.apache.nifi.processors.standard.LogAttribute
@@ -55,22 +54,12 @@ components:
   - source: 1f270bd0-016d-1000-2b76-e1368cc0c370
     relationships:
     - success
-  - source: bbfb088b-016c-1000-e10a-51a0a5c8b439
-    relationships:
-    - success
-
-- name: GenerateFlowFile
-  id: bbfb088b-016c-1000-e10a-51a0a5c8b439
-  position: 451,394
 
 - name: UpdateAttribute@2
   type: UpdateAttribute
   id: 1f270bd0-016d-1000-2b76-e1368cc0c370
   position: 714,188
   inputs:
-  - source: bbfb088b-016c-1000-e10a-51a0a5c8b439
-    relationships:
-    - success
   - source: 23824d3e-016d-1000-5737-859e01d8f5f1
     relationships:
     - success
