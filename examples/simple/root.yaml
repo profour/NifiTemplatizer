@@ -15,8 +15,8 @@ dependencies:
         UpdateAttribute: org.apache.nifi.processors.attributes.UpdateAttribute
 
 controllers:
-- id: 2382b43c-016d-1000-93f1-1c790a99bf54
-  name: StandardHttpContextMap
+- name: StandardHttpContextMap
+  id: 2382b43c-016d-1000-93f1-1c790a99bf54
   properties:
     Maximum Outstanding Requests: 500
 

@@ -9,17 +9,22 @@ import org.apache.nifi.api.toolkit.model.PropertyDescriptorDTO;
 
 public class ControllerYML {
 
-	public String id;
-	
 	public String name;
+	
+	public String type;
+	
+	public String id;
 	
 	public Map<String, Object> properties;
 	
-	public ControllerYML(ControllerServiceEntity controller) {
+	public ControllerYML(ControllerServiceEntity controller, String dependencyReference) {
 		ControllerServiceDTO dto = controller.getComponent();
 		
 		this.id = dto.getId();
 		this.name = dto.getName();
+		if (!this.name.equals(dependencyReference)) {
+			this.type = dependencyReference;
+		}
 
 		this.properties = new HashMap<String, Object>();
 		Map<String, PropertyDescriptorDTO> defaultProperties = dto.getDescriptors();
