@@ -1,0 +1,48 @@
+name: bbfb5e15-016c-1000-24e9-c7827e34b838
+
+dependencies:
+  org.apache.nifi:
+    nifi-standard-nar:
+      1.8.0:
+        LogAttribute: org.apache.nifi.processors.standard.LogAttribute
+    nifi-update-attribute-nar:
+      1.8.0:
+        UpdateAttribute: org.apache.nifi.processors.attributes.UpdateAttribute
+
+components:
+- name: Input1
+  type: INPUT_PORT
+  id: bbfc61f0-016c-1000-1e32-2043a1243e58
+  position: 583,540
+
+- name: Output1
+  type: OUTPUT_PORT
+  id: bbff2dfb-016c-1000-40ba-cee0f076c9b4
+  position: 1520,235
+  inputs:
+  - source: bbff5113-016c-1000-f578-4ebd3634b71b
+    relationships:
+    - success
+
+- name: Output2
+  type: OUTPUT_PORT
+  id: bbfc7679-016c-1000-633e-f242a224a77b
+  position: 1818,540
+  inputs:
+  - source: bbfeef69-016c-1000-4e26-e28df39b98da
+    relationships:
+    - success
+
+- name: LogAttribute Inside
+  type: LogAttribute
+  id: bbff5113-016c-1000-f578-4ebd3634b71b
+  position: 528,195
+  inputs:
+  - source: bbfc61f0-016c-1000-1e32-2043a1243e58
+
+- name: UpdateAttribute Inside
+  type: UpdateAttribute
+  id: bbfeef69-016c-1000-4e26-e28df39b98da
+  position: 1147,502
+  inputs:
+  - source: bbfc61f0-016c-1000-1e32-2043a1243e58

@@ -1,0 +1,115 @@
+name: root
+
+dependencies:
+  org.apache.nifi:
+    nifi-http-context-map-nar:
+      1.8.0:
+        StandardHttpContextMap: org.apache.nifi.http.StandardHttpContextMap
+    nifi-standard-nar:
+      1.8.0:
+        GenerateFlowFile: org.apache.nifi.processors.standard.GenerateFlowFile
+        HandleHttpRequest: org.apache.nifi.processors.standard.HandleHttpRequest
+        HandleHttpResponse: org.apache.nifi.processors.standard.HandleHttpResponse
+        LogAttribute: org.apache.nifi.processors.standard.LogAttribute
+    nifi-update-attribute-nar:
+      1.8.0:
+        UpdateAttribute: org.apache.nifi.processors.attributes.UpdateAttribute
+
+controllers:
+- id: 2382b43c-016d-1000-93f1-1c790a99bf54
+  name: StandardHttpContextMap
+  properties:
+    Maximum Outstanding Requests: 500
+
+components:
+- name: Remote Input
+  type: INPUT_PORT
+  id: 1efb4eb6-016d-1000-b64d-9b488e1e69b6
+  position: 1238,148
+
+- name: HandleHttpRequest
+  id: 23824d3e-016d-1000-5737-859e01d8f5f1
+  position: 192,167
+  properties:
+    HTTP Context Map: 2382b43c-016d-1000-93f1-1c790a99bf54
+
+- name: HandleHttpResponse
+  id: 238281e7-016d-1000-ca4a-a2916e9df938
+  position: 2372,704
+  properties:
+    HTTP Context Map: 2382b43c-016d-1000-93f1-1c790a99bf54
+    HTTP Status Code: 200
+  inputs:
+  - source: bbfea787-016c-1000-253a-647822a6106b
+    relationships:
+    - success
+
+- name: UpdateAttribute
+  id: bbfb226b-016c-1000-8d5e-95d3c69114da
+  position: 1177,396
+  properties:
+    test: asdf
+    Store State: Store state locally
+  inputs:
+  - source: 1efb4eb6-016d-1000-b64d-9b488e1e69b6
+  - source: 1f270bd0-016d-1000-2b76-e1368cc0c370
+    relationships:
+    - success
+  - source: bbfb088b-016c-1000-e10a-51a0a5c8b439
+    relationships:
+    - success
+
+- name: GenerateFlowFile
+  id: bbfb088b-016c-1000-e10a-51a0a5c8b439
+  position: 451,394
+
+- name: UpdateAttribute@2
+  type: UpdateAttribute
+  id: 1f270bd0-016d-1000-2b76-e1368cc0c370
+  position: 714,188
+  inputs:
+  - source: bbfb088b-016c-1000-e10a-51a0a5c8b439
+    relationships:
+    - success
+  - source: 23824d3e-016d-1000-5737-859e01d8f5f1
+    relationships:
+    - success
+
+- name: LogAttribute
+  id: bbfea787-016c-1000-253a-647822a6106b
+  position: 1891,681
+  inputs:
+  - source: 1eea08a5-016d-1000-1320-25058c581f4e
+    fromPort: Funnel
+  - source: bbfb226b-016c-1000-8d5e-95d3c69114da
+    relationships:
+    - set state fail
+    - success
+    properties:
+      prioritizers:
+      - org.apache.nifi.prioritizer.OldestFlowFileFirstPrioritizer
+      - org.apache.nifi.prioritizer.PriorityAttributePrioritizer
+      backPressureObjectThreshold: 10
+    position:
+    - 1801,365
+    - 2061,459
+  - source: bbff2dfb-016c-1000-40ba-cee0f076c9b4
+    fromPort: Output1
+
+- type: FUNNEL
+  id: 1eea08a5-016d-1000-1320-25058c581f4e
+  position: 1643,600
+  inputs:
+  - source: bbfb226b-016c-1000-8d5e-95d3c69114da
+    relationships:
+    - set state fail
+    - success
+  - source: bbfc7679-016c-1000-633e-f242a224a77b
+    fromPort: Output2
+
+- name: Test
+  type: PROCESS_GROUP
+  id: bbfb5e15-016c-1000-24e9-c7827e34b838
+  template: bbfb5e15-016c-1000-24e9-c7827e34b838.yaml
+  position: 1152,744
+  comment: dsfgsdfg

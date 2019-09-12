@@ -1,0 +1,33 @@
+<criteria>
+	<flowFilePolicy>USE_CLONE</flowFilePolicy>
+	<rules>
+		<actions>
+			<attribute>newValue</attribute>
+			<id>db00ca8d-e119-4c25-9ca4-51a5e17fc9e8</id>
+			<value>asdf!</value>
+		</actions>
+		<conditions>
+			<expression>${asdf2:equals("true")}</expression>
+			<id>bfd84b48-98c4-4ac0-80b9-35811d61651e</id>
+		</conditions>
+		<conditions>
+			<expression>${asdf:equals("true")}</expression>
+			<id>3ab95629-6bae-4766-b414-0ad609e0c982</id>
+		</conditions>
+		<id>4e22f3f9-e9f5-472d-b2be-8d587ac6c1da</id>
+		<name>Test Rule</name>
+	</rules>
+	<rules>
+		<actions>
+			<attribute>otherValue</attribute>
+			<id>b4e01db6-96fb-4974-bddd-2278b580f7ed</id>
+			<value>asdf@</value>
+		</actions>
+		<conditions>
+			<expression>${asdf2:equals("false")}</expression>
+			<id>5f829add-b907-47aa-8ca0-2ffcdc8086bd</id>
+		</conditions>
+		<id>ce9bc6b5-aaf2-4059-ab3e-6f397c41851b</id>
+		<name>Test Rule 2</name>
+	</rules>
+</criteria>
