@@ -10,3 +10,6 @@ Total Size:
 
 Input Root workspace:
 ![](examples/simple/root.png)
+
+Test Process Group workspace:
+![](examples/simple/subprocessgroup.png)
