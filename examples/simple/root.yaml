@@ -60,7 +60,7 @@ components:
     - ${asdf2:equals("false")}
     actions:
       otherValue: asdf@
-  rulePolicy: USE_CLONE
+  rulesPolicy: USE_CLONE
   inputs:
   - source: 1efb4eb6-016d-1000-b64d-9b488e1e69b6
   - source: 1f270bd0-016d-1000-2b76-e1368cc0c370
