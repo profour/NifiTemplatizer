@@ -2,12 +2,13 @@ package dev.nifi.yml;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.nifi.api.toolkit.model.ConnectionEntity;
 import org.apache.nifi.api.toolkit.model.FunnelEntity;
+import org.apache.nifi.api.toolkit.model.LabelEntity;
 import org.apache.nifi.api.toolkit.model.PortEntity;
 import org.apache.nifi.api.toolkit.model.PositionDTO;
 import org.apache.nifi.api.toolkit.model.ProcessGroupEntity;
@@ -20,7 +21,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import dev.nifi.xml.Criteria;
 import dev.nifi.xml.Rules;
 
-public class ProcessorYML {
+public class ElementYML {
 
 	/**
 	 * Human displayed Name for this processor
@@ -60,14 +61,9 @@ public class ProcessorYML {
 	public Map<String, String> properties;
 
 	/**
-	 * Advanced rules based on triggers that conditionally generate attributes
+	 * Only store the aesthetic properties that are different from default
 	 */
-	public List<RulesYML> rules;
-
-	/**
-	 * Policy of how FlowFiles are handled when multiple rules are triggered
-	 */
-	public String rulesPolicy;
+	public Map<String, String> styles;
 
 	/**
 	 * Scheduling details for this Processor
@@ -79,11 +75,16 @@ public class ProcessorYML {
 	 */
 	public List<InputConnectionYML> inputs;
 
+	/**
+	 * Advanced rules based on triggers that conditionally generate attributes
+	 */
+	public RulesYML advanced;
+
 	/*
 	 * Private constructor that handles all of the common functionality any visible
 	 * element on a canvas will need
 	 */
-	private ProcessorYML(String id, String name, String type, PositionDTO position, List<ConnectionEntity> inputs) {
+	private ElementYML(String id, String name, String type, PositionDTO position, List<ConnectionEntity> inputs) {
 		// set the unique identifiers for this processor
 		this.id = id;
 		this.name = name;
@@ -103,14 +104,17 @@ public class ProcessorYML {
 	 * @param dependencyReference Canonicalized name for this type of Processor
 	 * @param inputs              All input connections for this Processor
 	 */
-	public ProcessorYML(ProcessorEntity pg, String dependencyReference, List<ConnectionEntity> inputs) {
+	public ElementYML(ProcessorEntity pg, String dependencyReference, List<ConnectionEntity> inputs) {
 		this(pg.getId(), pg.getComponent().getName(), dependencyReference, pg.getPosition(), inputs);
 
 		final ProcessorConfigDTO config = pg.getComponent().getConfig();
 
 		// Handle all of the configurable aspects of a Processor and store the deltas
 		handleProperties(config.getDescriptors(), config.getProperties());
+		handleStyles(pg.getComponent().getStyle());
 		handleAnnotations(config.getAnnotationData());
+
+		this.comment = config.getComments();
 
 		// Extract Scheduling details that may have changed for this processor
 		// TODO:
@@ -124,9 +128,9 @@ public class ProcessorYML {
 	 *                     of the innards of the ProcessGroup
 	 * @param inputs       All input connections for this ProcessGroup
 	 */
-	public ProcessorYML(ProcessGroupEntity pg, String templateName, List<ConnectionEntity> inputs) {
-		this(pg.getId(), pg.getComponent().getName(), ReservedComponents.PROCESS_GROUP.name(), pg.getPosition(),
-				inputs);
+	public ElementYML(ProcessGroupEntity pg, String templateName, List<ConnectionEntity> inputs) {
+		this(pg.getId(), pg.getComponent().getName(), HelperYML.ReservedComponents.PROCESS_GROUP.name(),
+				pg.getPosition(), inputs);
 
 		// Reference the template that was generated to handle the innards of the
 		// ProcessGroup
@@ -140,7 +144,7 @@ public class ProcessorYML {
 	 * @param port   Port configuration data from NiFi's API
 	 * @param inputs All input connections for this port
 	 */
-	public ProcessorYML(PortEntity port, List<ConnectionEntity> inputs) {
+	public ElementYML(PortEntity port, List<ConnectionEntity> inputs) {
 		this(port.getId(), port.getComponent().getName(), port.getPortType(), port.getPosition(), inputs);
 	}
 
@@ -150,8 +154,27 @@ public class ProcessorYML {
 	 * @param f      Funnel configuration data from NiFi's API
 	 * @param inputs All input connections for this funnel
 	 */
-	public ProcessorYML(FunnelEntity f, List<ConnectionEntity> inputs) {
-		this(f.getId(), null, ReservedComponents.FUNNEL.name(), f.getPosition(), inputs);
+	public ElementYML(FunnelEntity f, List<ConnectionEntity> inputs) {
+		this(f.getId(), null, HelperYML.ReservedComponents.FUNNEL.name(), f.getPosition(), inputs);
+	}
+
+	/**
+	 * Creates a YAML representation for a label
+	 * 
+	 * @param l Label configuration data from NiFi's API
+	 */
+	public ElementYML(LabelEntity l) {
+		this(l.getId(), null, HelperYML.ReservedComponents.LABEL.name(), l.getPosition(), null);
+
+		this.comment = l.getComponent().getLabel();
+
+		this.styles = new TreeMap<String, String>();
+
+		// Coerce width/height into the styles bucket
+		this.styles.put(HelperYML.WIDTH, String.format("%.0f", l.getComponent().getWidth()));
+		this.styles.put(HelperYML.HEIGHT, String.format("%.0f", l.getComponent().getHeight()));
+
+		handleStyles(l.getComponent().getStyle());
 	}
 
 	/*
@@ -160,7 +183,7 @@ public class ProcessorYML {
 	 */
 	private void handleProperties(Map<String, PropertyDescriptorDTO> defaultProperties,
 			Map<String, String> configuredValues) {
-		this.properties = new HashMap<String, String>();
+		this.properties = new TreeMap<String, String>();
 
 		// Populate the list of properties that have changed (compare default value vs
 		// configured value)
@@ -170,9 +193,21 @@ public class ProcessorYML {
 
 			// Check if the configuredValue differs from the default value
 			if ((defaultProperty.getDefaultValue() == null && configuredValue != null)
-					|| (defaultProperty.getDefaultValue() != null && !defaultProperty.getDefaultValue().equals(configuredValue))) {
+					|| (defaultProperty.getDefaultValue() != null
+							&& !defaultProperty.getDefaultValue().equals(configuredValue))) {
 				this.properties.put(propertyName, configuredValue);
 			}
+		}
+	}
+
+	private void handleStyles(Map<String, String> styles) {
+		if (this.styles == null) {
+			this.styles = new TreeMap<>();
+		}
+
+		for (String s : styles.keySet()) {
+			String val = styles.get(s);
+			this.styles.put(s, val);
 		}
 	}
 
@@ -180,10 +215,10 @@ public class ProcessorYML {
 	 * Helper method to store all input connections to a processor
 	 */
 	private void handleConnections(List<ConnectionEntity> inputs) {
-
-		// Process incoming connections to fill out the input listing
-		this.inputs = new ArrayList<>();
 		if (inputs != null) {
+			// Process incoming connections to fill out the input listing
+			this.inputs = new ArrayList<>();
+
 			for (ConnectionEntity connection : inputs) {
 				this.inputs.add(new InputConnectionYML(connection));
 			}
@@ -209,19 +244,18 @@ public class ProcessorYML {
 			return;
 		}
 
-		this.rules = new ArrayList<>();
+		List<RuleYML> rules = new ArrayList<RuleYML>();
 
 		XmlMapper xmlMapper = new XmlMapper();
 		try {
 			Criteria criteria = xmlMapper.readValue(xmlAnnotations, Criteria.class);
 
-			this.rulesPolicy = criteria.flowFilePolicy;
-
 			for (Rules rule : criteria.rules) {
-				RulesYML r = new RulesYML(rule.conditions, rule.actions);
-
-				this.rules.add(r);
+				RuleYML r = new RuleYML(rule.conditions, rule.actions);
+				rules.add(r);
 			}
+
+			this.advanced = new RulesYML(criteria.flowFilePolicy, rules);
 
 		} catch (IOException e) {
 			// TODO: setup proper logging

@@ -17,6 +17,8 @@ import org.apache.nifi.api.toolkit.model.ControllerServicesEntity;
 import org.apache.nifi.api.toolkit.model.FunnelEntity;
 import org.apache.nifi.api.toolkit.model.FunnelsEntity;
 import org.apache.nifi.api.toolkit.model.InputPortsEntity;
+import org.apache.nifi.api.toolkit.model.LabelEntity;
+import org.apache.nifi.api.toolkit.model.LabelsEntity;
 import org.apache.nifi.api.toolkit.model.OutputPortsEntity;
 import org.apache.nifi.api.toolkit.model.PortEntity;
 import org.apache.nifi.api.toolkit.model.ProcessGroupEntity;
@@ -32,7 +34,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 
 import dev.nifi.yml.ControllerYML;
-import dev.nifi.yml.ProcessorYML;
+import dev.nifi.yml.ElementYML;
 import dev.nifi.yml.TemplateYML;
 
 
@@ -71,7 +73,7 @@ public class NifiExportTemplates {
 	
 	public static TemplateYML convertToTemplateYML(String processGroupId, List<TemplateYML> allTemplates) throws ApiException {
 		FlowApi fapi = new FlowApi();
-		fapi.getApiClient().setBasePath("http://localhost:8080/nifi-api");
+		fapi.getApiClient().setBasePath("http://localhost:8080/nifi-api"); 
 		
 		ProcessGroupsApi pgapi = new ProcessGroupsApi();
 		pgapi.getApiClient().setBasePath("http://localhost:8080/nifi-api");
@@ -83,6 +85,7 @@ public class NifiExportTemplates {
 		ProcessGroupsEntity pge = pgapi.getProcessGroups(processGroupId);
 		InputPortsEntity ipe = pgapi.getInputPorts(processGroupId);
 		OutputPortsEntity ope = pgapi.getOutputPorts(processGroupId);
+		LabelsEntity lbe = pgapi.getLabels(processGroupId);
 		ControllerServicesEntity cse = fapi.getControllerServicesFromGroup(processGroupId, false, false);
 		
 		
@@ -115,28 +118,33 @@ public class NifiExportTemplates {
 		}
 		
 		for (PortEntity port : ipe.getInputPorts()) {
-			ProcessorYML p = new ProcessorYML(port, connectionLookup.get(port.getId()));
+			ElementYML p = new ElementYML(port, connectionLookup.get(port.getId()));
 			rootPG.components.add(p);
 		}
 		for (PortEntity port : ope.getOutputPorts()) {
-			ProcessorYML p = new ProcessorYML(port, connectionLookup.get(port.getId()));
+			ElementYML p = new ElementYML(port, connectionLookup.get(port.getId()));
 			rootPG.components.add(p);
 		}
 		
 		for (ProcessorEntity pe : root.getProcessors()) {
-			ProcessorYML p = new ProcessorYML(pe, depBuilder.getCanonicalDependencyName(pe.getId()), connectionLookup.get(pe.getId()));
+			ElementYML p = new ElementYML(pe, depBuilder.getCanonicalDependencyName(pe.getId()), connectionLookup.get(pe.getId()));
 			rootPG.components.add(p);
 		}
 		
 		for (FunnelEntity f : funnels.getFunnels()) {
-			ProcessorYML p = new ProcessorYML(f, connectionLookup.get(f.getId()));
+			ElementYML p = new ElementYML(f, connectionLookup.get(f.getId()));
+			rootPG.components.add(p);
+		}
+		
+		for (LabelEntity l : lbe.getLabels()) {
+			ElementYML p = new ElementYML(l);
 			rootPG.components.add(p);
 		}
 		
 		for (ProcessGroupEntity pg : pge.getProcessGroups()) {
 			TemplateYML template = convertToTemplateYML(pg.getId(), allTemplates);
 			
-			ProcessorYML p = new ProcessorYML(pg, template.name, connectionLookup.get(pg.getId()));
+			ElementYML p = new ElementYML(pg, template.name, connectionLookup.get(pg.getId()));
 			rootPG.components.add(p);
 		}
 		

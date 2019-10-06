@@ -46,26 +46,30 @@ components:
 - name: UpdateAttribute
   id: bbfb226b-016c-1000-8d5e-95d3c69114da
   position: 1177,396
+  comment: This is a comment about how UpdateAttribute works.
   properties:
+    Store State: Store state locally
     newAttribute: ${uuid}
     test: asdf
-    Store State: Store state locally
-  rules:
-  - conditions:
-    - ${asdf2:equals("true")}
-    - ${asdf:equals("true")}
-    actions:
-      newValue: asdf!
-  - conditions:
-    - ${asdf2:equals("false")}
-    actions:
-      otherValue: asdf@
-  rulesPolicy: USE_CLONE
+  styles:
+    background-color: '#e02020'
   inputs:
   - source: 1efb4eb6-016d-1000-b64d-9b488e1e69b6
   - source: 1f270bd0-016d-1000-2b76-e1368cc0c370
     relationships:
     - success
+  advanced:
+    policy: USE_CLONE
+    rules:
+    - conditions:
+      - ${asdf2:equals("true")}
+      - ${asdf:equals("true")}
+      actions:
+        newValue: asdf!
+    - conditions:
+      - ${asdf2:equals("false")}
+      actions:
+        otherValue: asdf@
 
 - name: UpdateAttribute@2
   type: UpdateAttribute
@@ -87,10 +91,10 @@ components:
     - set state fail
     - success
     properties:
+      backPressureObjectThreshold: 10
       prioritizers:
       - org.apache.nifi.prioritizer.OldestFlowFileFirstPrioritizer
       - org.apache.nifi.prioritizer.PriorityAttributePrioritizer
-      backPressureObjectThreshold: 10
     position:
     - 1801,365
     - 2061,459
@@ -107,6 +111,17 @@ components:
     - success
   - source: bbfc7679-016c-1000-633e-f242a224a77b
     fromPort: Output2
+
+- type: LABEL
+  id: a36c5dd4-016d-1000-807e-8e005804985e
+  position: 638,590
+  comment: |
+    Test label
+  styles:
+    background-color: '#fff7d7'
+    font-size: 12px
+    height: 150
+    width: 150
 
 - name: Test
   type: PROCESS_GROUP

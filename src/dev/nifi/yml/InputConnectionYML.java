@@ -1,9 +1,9 @@
 package dev.nifi.yml;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.nifi.api.toolkit.model.ConnectableDTO.TypeEnum;
 import org.apache.nifi.api.toolkit.model.ConnectionDTO;
@@ -47,7 +47,7 @@ public class InputConnectionYML {
 
 
 	public InputConnectionYML(ConnectionEntity connection) {
-		this.properties = new HashMap<>();
+		this.properties = new TreeMap<>();
 		this.source = connection.getSourceId();
 		
 		ConnectionDTO conn = connection.getComponent();

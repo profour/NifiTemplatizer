@@ -13,6 +13,6 @@ public class TemplateYML {
 	
 	public List<ControllerYML> controllers = new ArrayList<ControllerYML>();
 	
-	public List<ProcessorYML> components = new ArrayList<ProcessorYML>();
+	public List<ElementYML> components = new ArrayList<ElementYML>();
 		
 }

@@ -1,7 +1,7 @@
 package dev.nifi.yml;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.nifi.api.toolkit.model.ControllerServiceDTO;
 import org.apache.nifi.api.toolkit.model.ControllerServiceEntity;
@@ -26,7 +26,7 @@ public class ControllerYML {
 			this.type = dependencyReference;
 		}
 
-		this.properties = new HashMap<String, Object>();
+		this.properties = new TreeMap<String, Object>();
 		Map<String, PropertyDescriptorDTO> defaultProperties = dto.getDescriptors();
 		Map<String, String> configuredValues = dto.getProperties();
 		for (String propertyName : defaultProperties.keySet()) {
@@ -37,7 +37,6 @@ public class ControllerYML {
 			if ((defaultProperty.getDefaultValue() == null && configuredValue != null) || 
 				(defaultProperty.getDefaultValue() != null && !defaultProperty.getDefaultValue().equals(configuredValue))) {
 				this.properties.put(propertyName, configuredValue);
-				System.out.println("Configured Value: " + propertyName + " = " + configuredValue);
 			}
 		}
 	}
