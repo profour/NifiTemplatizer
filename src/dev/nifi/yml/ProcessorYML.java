@@ -172,7 +172,6 @@ public class ProcessorYML {
 			if ((defaultProperty.getDefaultValue() == null && configuredValue != null)
 					|| (defaultProperty.getDefaultValue() != null && !defaultProperty.getDefaultValue().equals(configuredValue))) {
 				this.properties.put(propertyName, configuredValue);
-				System.out.println("Configured Value: " + propertyName + " = " + configuredValue);
 			}
 		}
 	}
