@@ -1,5 +1,6 @@
 package dev.nifi.yml;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +13,11 @@ import org.apache.nifi.api.toolkit.model.PositionDTO;
 import org.apache.nifi.api.toolkit.model.ProcessGroupEntity;
 import org.apache.nifi.api.toolkit.model.ProcessorEntity;
 import org.apache.nifi.api.toolkit.model.PropertyDescriptorDTO;
+
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+
+import dev.nifi.xml.Criteria;
+import dev.nifi.xml.Rules;
 
 public class ProcessorYML {
 
@@ -56,7 +62,12 @@ public class ProcessorYML {
 	/**
 	 * Advanced rules based on triggers that conditionally generate attributes
 	 */
-	public Map<RulesYML, ExpressionsYML> rules;
+	public List<RulesYML> rules;
+	
+	/**
+	 * Policy of how FlowFiles are handled when multiple rules are triggered
+	 */
+	public String rulesPolicy;
 	
 	/**
 	 * Scheduling details for this Processor
@@ -91,6 +102,30 @@ public class ProcessorYML {
 				(defaultProperty.getDefaultValue() != null && !defaultProperty.getDefaultValue().equals(configuredValue))) {
 				this.properties.put(propertyName, configuredValue);
 				System.out.println("Configured Value: " + propertyName + " = " + configuredValue);
+			}
+		}
+		
+		// Check to see if there are any advanced annotations on this processor
+		String xmlAnnotations = pg.getComponent().getConfig().getAnnotationData();
+		if (xmlAnnotations != null && !xmlAnnotations.isEmpty()) {
+			this.rules = new ArrayList<>();
+			
+			XmlMapper xmlMapper = new XmlMapper();
+		    try {
+				Criteria criteria = xmlMapper.readValue(xmlAnnotations, Criteria.class);
+				
+				this.rulesPolicy = criteria.flowFilePolicy;
+				
+				for (Rules rule : criteria.rules) {
+					RulesYML r = new RulesYML(rule.conditions, rule.actions);
+					
+					this.rules.add(r);
+				}
+				
+			} catch (IOException e) {
+				// TODO: setup proper logging
+				System.out.println("Failed to parse xml: " + xmlAnnotations);
+				e.printStackTrace();
 			}
 		}
 		
