@@ -2,8 +2,32 @@
 <template encoding-version="1.2">
     <description></description>
     <groupId>bbf883cd-016c-1000-72c7-2e403897e039</groupId>
-    <name>SImple Example</name>
+    <name>Simple Example</name>
     <snippet>
+        <connections>
+            <id>04756187-d5e0-3dd0-0000-000000000000</id>
+            <parentGroupId>0b038790-37b5-3617-0000-000000000000</parentGroupId>
+            <backPressureDataSizeThreshold>1 GB</backPressureDataSizeThreshold>
+            <backPressureObjectThreshold>10000</backPressureObjectThreshold>
+            <destination>
+                <groupId>0b038790-37b5-3617-0000-000000000000</groupId>
+                <id>78e2ba79-a996-3df8-0000-000000000000</id>
+                <type>PROCESSOR</type>
+            </destination>
+            <flowFileExpiration>0 sec</flowFileExpiration>
+            <labelIndex>1</labelIndex>
+            <loadBalanceCompression>DO_NOT_COMPRESS</loadBalanceCompression>
+            <loadBalancePartitionAttribute></loadBalancePartitionAttribute>
+            <loadBalanceStatus>LOAD_BALANCE_NOT_CONFIGURED</loadBalanceStatus>
+            <loadBalanceStrategy>DO_NOT_LOAD_BALANCE</loadBalanceStrategy>
+            <name></name>
+            <source>
+                <groupId>d8323ec6-bbe8-3f22-0000-000000000000</groupId>
+                <id>f9a9a50d-ab63-3e7f-a700-b4fb9907e8e4</id>
+                <type>REMOTE_OUTPUT_PORT</type>
+            </source>
+            <zIndex>0</zIndex>
+        </connections>
         <connections>
             <id>2364ce48-aea2-3822-0000-000000000000</id>
             <parentGroupId>0b038790-37b5-3617-0000-000000000000</parentGroupId>
@@ -182,6 +206,30 @@
             <zIndex>0</zIndex>
         </connections>
         <connections>
+            <id>80755a01-1c8d-366a-0000-000000000000</id>
+            <parentGroupId>0b038790-37b5-3617-0000-000000000000</parentGroupId>
+            <backPressureDataSizeThreshold>1 GB</backPressureDataSizeThreshold>
+            <backPressureObjectThreshold>10000</backPressureObjectThreshold>
+            <destination>
+                <groupId>0b038790-37b5-3617-0000-000000000000</groupId>
+                <id>2ba83dc5-4b22-38f0-0000-000000000000</id>
+                <type>OUTPUT_PORT</type>
+            </destination>
+            <flowFileExpiration>0 sec</flowFileExpiration>
+            <labelIndex>1</labelIndex>
+            <loadBalanceCompression>DO_NOT_COMPRESS</loadBalanceCompression>
+            <loadBalancePartitionAttribute></loadBalancePartitionAttribute>
+            <loadBalanceStatus>LOAD_BALANCE_NOT_CONFIGURED</loadBalanceStatus>
+            <loadBalanceStrategy>DO_NOT_LOAD_BALANCE</loadBalanceStrategy>
+            <name></name>
+            <source>
+                <groupId>a43f8a99-c459-3aa9-0000-000000000000</groupId>
+                <id>3e09d75a-e5ea-32f4-0000-000000000000</id>
+                <type>OUTPUT_PORT</type>
+            </source>
+            <zIndex>0</zIndex>
+        </connections>
+        <connections>
             <id>8fc9b24d-361a-3bc6-0000-000000000000</id>
             <parentGroupId>0b038790-37b5-3617-0000-000000000000</parentGroupId>
             <backPressureDataSizeThreshold>1 GB</backPressureDataSizeThreshold>
@@ -214,6 +262,30 @@
                 <groupId>0b038790-37b5-3617-0000-000000000000</groupId>
                 <id>5469f8d8-a039-38e6-0000-000000000000</id>
                 <type>PROCESSOR</type>
+            </source>
+            <zIndex>0</zIndex>
+        </connections>
+        <connections>
+            <id>a28a271f-949b-3783-0000-000000000000</id>
+            <parentGroupId>0b038790-37b5-3617-0000-000000000000</parentGroupId>
+            <backPressureDataSizeThreshold>1 GB</backPressureDataSizeThreshold>
+            <backPressureObjectThreshold>10000</backPressureObjectThreshold>
+            <destination>
+                <groupId>d8323ec6-bbe8-3f22-0000-000000000000</groupId>
+                <id>e9494301-89b2-31dc-aac5-3df2a63d7de6</id>
+                <type>REMOTE_INPUT_PORT</type>
+            </destination>
+            <flowFileExpiration>0 sec</flowFileExpiration>
+            <labelIndex>1</labelIndex>
+            <loadBalanceCompression>DO_NOT_COMPRESS</loadBalanceCompression>
+            <loadBalancePartitionAttribute></loadBalancePartitionAttribute>
+            <loadBalanceStatus>LOAD_BALANCE_NOT_CONFIGURED</loadBalanceStatus>
+            <loadBalanceStrategy>DO_NOT_LOAD_BALANCE</loadBalanceStrategy>
+            <name></name>
+            <source>
+                <groupId>a43f8a99-c459-3aa9-0000-000000000000</groupId>
+                <id>3e09d75a-e5ea-32f4-0000-000000000000</id>
+                <type>OUTPUT_PORT</type>
             </source>
             <zIndex>0</zIndex>
         </connections>
@@ -298,6 +370,7 @@
                 </entry>
                 <entry>
                     <key>Request Expiration</key>
+                    <value>1 min</value>
                 </entry>
             </properties>
             <state>ENABLED</state>
@@ -325,6 +398,41 @@
             <transmitting>false</transmitting>
             <type>INPUT_PORT</type>
         </inputPorts>
+        <labels>
+            <id>dc64abc3-244f-32d9-0000-000000000000</id>
+            <parentGroupId>0b038790-37b5-3617-0000-000000000000</parentGroupId>
+            <position>
+                <x>445.48542802875517</x>
+                <y>441.1127668417289</y>
+            </position>
+            <height>150.0</height>
+            <label>Test label
+</label>
+            <style>
+                <entry>
+                    <key>background-color</key>
+                    <value>#fff7d7</value>
+                </entry>
+                <entry>
+                    <key>font-size</key>
+                    <value>12px</value>
+                </entry>
+            </style>
+            <width>150.0</width>
+        </labels>
+        <outputPorts>
+            <id>2ba83dc5-4b22-38f0-0000-000000000000</id>
+            <parentGroupId>0b038790-37b5-3617-0000-000000000000</parentGroupId>
+            <position>
+                <x>1667.5544842534134</x>
+                <y>835.2097433953976</y>
+            </position>
+            <concurrentlySchedulableTaskCount>1</concurrentlySchedulableTaskCount>
+            <name>Remote out</name>
+            <state>STOPPED</state>
+            <transmitting>false</transmitting>
+            <type>OUTPUT_PORT</type>
+        </outputPorts>
         <processGroups>
             <id>a43f8a99-c459-3aa9-0000-000000000000</id>
             <parentGroupId>0b038790-37b5-3617-0000-000000000000</parentGroupId>
@@ -816,7 +924,7 @@
     &lt;/rules&gt;
 &lt;/criteria&gt;</annotationData>
                 <bulletinLevel>WARN</bulletinLevel>
-                <comments></comments>
+                <comments>This is a comment about how UpdateAttribute works.</comments>
                 <concurrentlySchedulableTaskCount>1</concurrentlySchedulableTaskCount>
                 <descriptors>
                     <entry>
@@ -889,7 +997,12 @@
                 <name>success</name>
             </relationships>
             <state>STOPPED</state>
-            <style/>
+            <style>
+                <entry>
+                    <key>background-color</key>
+                    <value>#e02020</value>
+                </entry>
+            </style>
             <type>org.apache.nifi.processors.attributes.UpdateAttribute</type>
         </processors>
         <processors>
@@ -957,6 +1070,120 @@
             <state>STOPPED</state>
             <style/>
             <type>org.apache.nifi.processors.attributes.UpdateAttribute</type>
+        </processors>
+        <processors>
+            <id>78e2ba79-a996-3df8-0000-000000000000</id>
+            <parentGroupId>0b038790-37b5-3617-0000-000000000000</parentGroupId>
+            <position>
+                <x>1636.5386755271686</x>
+                <y>962.5379124939129</y>
+            </position>
+            <bundle>
+                <artifact>nifi-standard-nar</artifact>
+                <group>org.apache.nifi</group>
+                <version>1.8.0</version>
+            </bundle>
+            <config>
+                <bulletinLevel>WARN</bulletinLevel>
+                <comments></comments>
+                <concurrentlySchedulableTaskCount>1</concurrentlySchedulableTaskCount>
+                <descriptors>
+                    <entry>
+                        <key>Log Level</key>
+                        <value>
+                            <name>Log Level</name>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>Log Payload</key>
+                        <value>
+                            <name>Log Payload</name>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>Attributes to Log</key>
+                        <value>
+                            <name>Attributes to Log</name>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>attributes-to-log-regex</key>
+                        <value>
+                            <name>attributes-to-log-regex</name>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>Attributes to Ignore</key>
+                        <value>
+                            <name>Attributes to Ignore</name>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>attributes-to-ignore-regex</key>
+                        <value>
+                            <name>attributes-to-ignore-regex</name>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>Log prefix</key>
+                        <value>
+                            <name>Log prefix</name>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>character-set</key>
+                        <value>
+                            <name>character-set</name>
+                        </value>
+                    </entry>
+                </descriptors>
+                <executionNode>ALL</executionNode>
+                <lossTolerant>false</lossTolerant>
+                <penaltyDuration>30 sec</penaltyDuration>
+                <properties>
+                    <entry>
+                        <key>Log Level</key>
+                        <value>info</value>
+                    </entry>
+                    <entry>
+                        <key>Log Payload</key>
+                        <value>false</value>
+                    </entry>
+                    <entry>
+                        <key>Attributes to Log</key>
+                    </entry>
+                    <entry>
+                        <key>attributes-to-log-regex</key>
+                        <value>.*</value>
+                    </entry>
+                    <entry>
+                        <key>Attributes to Ignore</key>
+                    </entry>
+                    <entry>
+                        <key>attributes-to-ignore-regex</key>
+                    </entry>
+                    <entry>
+                        <key>Log prefix</key>
+                    </entry>
+                    <entry>
+                        <key>character-set</key>
+                        <value>windows-1252</value>
+                    </entry>
+                </properties>
+                <runDurationMillis>0</runDurationMillis>
+                <schedulingPeriod>0 sec</schedulingPeriod>
+                <schedulingStrategy>TIMER_DRIVEN</schedulingStrategy>
+                <yieldDuration>1 sec</yieldDuration>
+            </config>
+            <executionNodeRestricted>false</executionNodeRestricted>
+            <name>RemoteLogAttribute</name>
+            <relationships>
+                <autoTerminate>true</autoTerminate>
+                <name>success</name>
+            </relationships>
+            <state>STOPPED</state>
+            <style/>
+            <type>org.apache.nifi.processors.standard.LogAttribute</type>
         </processors>
         <processors>
             <id>aa1f6a5f-0f1e-37fe-0000-000000000000</id>
@@ -1227,6 +1454,55 @@
             <style/>
             <type>org.apache.nifi.processors.standard.HandleHttpResponse</type>
         </processors>
+        <remoteProcessGroups>
+            <id>d8323ec6-bbe8-3f22-0000-000000000000</id>
+            <parentGroupId>0b038790-37b5-3617-0000-000000000000</parentGroupId>
+            <position>
+                <x>950.41053656381</x>
+                <y>929.1130275535568</y>
+            </position>
+            <comments></comments>
+            <communicationsTimeout>30 sec</communicationsTimeout>
+            <contents>
+                <inputPorts>
+                    <batchSettings>
+                        <count>12</count>
+                        <duration>10s</duration>
+                        <size>1000b</size>
+                    </batchSettings>
+                    <comments></comments>
+                    <concurrentlySchedulableTaskCount>2</concurrentlySchedulableTaskCount>
+                    <connected>true</connected>
+                    <exists>true</exists>
+                    <groupId>a39044b5-016d-1000-6c5b-8ff48923c699</groupId>
+                    <id>e9494301-89b2-31dc-aac5-3df2a63d7de6</id>
+                    <name>Remote Input</name>
+                    <targetId>1efb4eb6-016d-1000-b64d-9b488e1e69b6</targetId>
+                    <targetRunning>false</targetRunning>
+                    <transmitting>true</transmitting>
+                    <useCompression>false</useCompression>
+                </inputPorts>
+                <outputPorts>
+                    <batchSettings/>
+                    <concurrentlySchedulableTaskCount>1</concurrentlySchedulableTaskCount>
+                    <connected>true</connected>
+                    <exists>true</exists>
+                    <groupId>a39044b5-016d-1000-6c5b-8ff48923c699</groupId>
+                    <id>f9a9a50d-ab63-3e7f-a700-b4fb9907e8e4</id>
+                    <name>Remote out</name>
+                    <targetId>a3a5e4aa-016d-1000-d2c5-fd5d62faa688</targetId>
+                    <targetRunning>false</targetRunning>
+                    <transmitting>true</transmitting>
+                    <useCompression>false</useCompression>
+                </outputPorts>
+            </contents>
+            <proxyHost></proxyHost>
+            <proxyUser></proxyUser>
+            <targetUri>http://localhost:8080/nifi</targetUri>
+            <targetUris>http://localhost:8080/nifi</targetUris>
+            <transportProtocol>HTTP</transportProtocol>
+            <yieldDuration>10 sec</yieldDuration>
+        </remoteProcessGroups>
     </snippet>
-    <timestamp>09/11/2019 23:38:27 MDT</timestamp>
+    <timestamp>10/06/2019 19:02:03 MDT</timestamp>
 </template>
