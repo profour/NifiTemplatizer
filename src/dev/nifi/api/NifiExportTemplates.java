@@ -100,8 +100,9 @@ public class NifiExportTemplates {
 		for (ConnectionEntity ce : connections.getConnections()) {
 			// When dealing with a destination that is a remote process group, 
 			// the group id is the correct id, not the regular id
-			String destination = ce.getDestinationType() == 
-					DestinationTypeEnum.REMOTE_INPUT_PORT ? ce.getDestinationGroupId() : ce.getDestinationId();
+			String destination = ce.getDestinationType() == DestinationTypeEnum.REMOTE_INPUT_PORT ||
+					ce.getDestinationType() == DestinationTypeEnum.INPUT_PORT 
+					? ce.getDestinationGroupId() : ce.getDestinationId();
 					
 			if (!connectionLookup.containsKey(destination)) {
 				connectionLookup.put(destination, new ArrayList<>());

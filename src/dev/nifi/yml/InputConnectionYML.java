@@ -19,52 +19,62 @@ public class InputConnectionYML {
 	 * Source processor flowfiles are coming from
 	 */
 	public String source;
-	
+
 	/**
 	 * Relationship(s) that are coming from the source processor
 	 */
 	public List<String> relationships;
-	
+
 	/**
 	 * If the source is a process group, specify the Output Port name
 	 */
 	public String fromPort;
-	
 
 	/**
-	 * If the destination is a process group, specify the Input Port to receive the data on
+	 * If the destination is a process group, specify the Input Port to receive the
+	 * data on
 	 */
 	public String toPort;
-	
+
 	/**
-	 * Special properties for the incoming connection (queuing type, queue size, etc)
+	 * Special properties for the incoming connection (queuing type, queue size,
+	 * etc)
 	 */
 	public Map<String, Object> properties;
-	
+
 	/**
 	 * Aesthetic positioning of bends in the connection link between processors
 	 */
 	public List<String> position;
 
-
 	public InputConnectionYML(ConnectionEntity connection) {
 		this.properties = new TreeMap<>();
-		
-		// If the source is a REMOTE_OUTPUT_PORT, we should reference the (remote) group id, rather than the regular id
-		this.source = connection.getSourceType() == 
-				SourceTypeEnum.REMOTE_OUTPUT_PORT ? connection.getSourceGroupId() : connection.getSourceId();
-		
+
+		// If the source is a REMOTE_OUTPUT_PORT, we should reference the (remote) group
+		// id, rather than the regular id
+		this.source = connection.getSourceType() == SourceTypeEnum.REMOTE_OUTPUT_PORT ||
+				      connection.getSourceType() == SourceTypeEnum.OUTPUT_PORT 
+				      ? connection.getSourceGroupId() : connection.getSourceId();
+
 		ConnectionDTO conn = connection.getComponent();
-		
+
 		this.relationships = conn.getSelectedRelationships();
 
-		// If our input is coming from another process group, we need to identify the port name
-		if (conn.getSource().getType() == TypeEnum.OUTPUT_PORT || conn.getSource().getType() == TypeEnum.REMOTE_OUTPUT_PORT || conn.getSource().getType() == TypeEnum.FUNNEL) {
+		// If our input is coming from another process group, 
+		// we need to identify the port name
+		if (conn.getSource().getType() == TypeEnum.OUTPUT_PORT
+				|| conn.getSource().getType() == TypeEnum.REMOTE_OUTPUT_PORT
+				|| conn.getSource().getType() == TypeEnum.FUNNEL) {
 			this.fromPort = conn.getSource().getName();
-		}if (conn.getDestination().getType() == TypeEnum.INPUT_PORT || conn.getDestination().getType() == TypeEnum.REMOTE_INPUT_PORT) {
-			this.toPort = conn.getDestination().getName();
 		}
 		
+		// If this is connecting to a process group, need to map the input onto
+		// the correct input port inside the process group
+		if (conn.getDestination().getType() == TypeEnum.INPUT_PORT
+				|| conn.getDestination().getType() == TypeEnum.REMOTE_INPUT_PORT) {
+			this.toPort = conn.getDestination().getName();
+		}
+
 		// See if any manual position of the link was performed (aesthetic only)
 		if (!conn.getBends().isEmpty()) {
 			this.position = new ArrayList<String>();
@@ -73,8 +83,7 @@ public class InputConnectionYML {
 				this.position.add(String.format("%.0f,%.0f", pos.getX(), pos.getY()));
 			}
 		}
-		
-		
+
 		// Try to determine if any link properties have changed from their defaults
 		if (conn.getName() != null && !conn.getName().isEmpty()) {
 			this.properties.put("name", conn.getName());
@@ -101,10 +110,10 @@ public class InputConnectionYML {
 			this.properties.put("prioritizers", conn.getPrioritizers());
 		}
 	}
-	
+
 	public InputConnectionYML(ConnectionEntity connection, String receiver) {
 		this(connection);
-		
+
 		this.toPort = receiver;
 	}
 }

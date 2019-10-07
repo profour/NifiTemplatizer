@@ -31,7 +31,7 @@ components:
   id: a3a5e4aa-016d-1000-d2c5-fd5d62faa688
   position: 1860,984
   inputs:
-  - source: bbff2dfb-016c-1000-40ba-cee0f076c9b4
+  - source: bbfb5e15-016c-1000-24e9-c7827e34b838
     fromPort: Output1
 
 - name: HandleHttpRequest
@@ -114,7 +114,7 @@ components:
     position:
     - 1801,365
     - 2061,459
-  - source: bbff2dfb-016c-1000-40ba-cee0f076c9b4
+  - source: bbfb5e15-016c-1000-24e9-c7827e34b838
     fromPort: Output1
 
 - type: FUNNEL
@@ -125,7 +125,7 @@ components:
     relationships:
     - set state fail
     - success
-  - source: bbfc7679-016c-1000-633e-f242a224a77b
+  - source: bbfb5e15-016c-1000-24e9-c7827e34b838
     fromPort: Output2
 
 - type: LABEL
@@ -143,6 +143,13 @@ components:
   template: bbfb5e15-016c-1000-24e9-c7827e34b838.yaml
   position: 1152,744
   comment: dsfgsdfg
+  inputs:
+  - source: bbfb226b-016c-1000-8d5e-95d3c69114da
+    relationships:
+    - success
+    toPort: Input1
+    position:
+    - 772,800
 
 - name: NiFi Flow
   type: REMOTE_PROCESS_GROUP
@@ -152,6 +159,6 @@ components:
     protocol: HTTP
     targetUris: http://localhost:8080/nifi
   inputs:
-  - source: bbff2dfb-016c-1000-40ba-cee0f076c9b4
+  - source: bbfb5e15-016c-1000-24e9-c7827e34b838
     fromPort: Output1
     toPort: Remote Input
