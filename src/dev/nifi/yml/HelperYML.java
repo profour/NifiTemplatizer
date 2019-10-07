@@ -1,5 +1,7 @@
 package dev.nifi.yml;
 
+import org.apache.nifi.api.toolkit.model.PositionDTO;
+
 public class HelperYML {
 	// Enumeration of statically available types for elements on the workspace
 	public enum ReservedComponents {
@@ -27,4 +29,15 @@ public class HelperYML {
 	public static final String DEFAULT_REMOTE_TRANSPORT = "RAW";
 	public static final String DEFAULT_REMOTE_TIMEOUT = "30 sec";
 	public static final String DEFAULT_REMOTE_YIELD = "10 sec";
+	
+	
+	public static PositionDTO createPosition(String pos) {
+
+		PositionDTO position = new PositionDTO();
+		String[] parts = pos.split(",");
+		position.setX(new Double(parts[0]));
+		position.setY(new Double(parts[1]));
+		
+		return position;
+	}
 }

@@ -14,6 +14,11 @@ public class RulesYML {
 	 */
 	public List<RuleYML> rules;
 	
+	/**
+	 * Don't use. Only for deserialization.
+	 */
+	public RulesYML() {}
+	
 	public RulesYML(String flowFilePolicy, List<RuleYML> rules) {
 		this.policy = flowFilePolicy;
 		this.rules = rules;

@@ -46,6 +46,11 @@ public class InputConnectionYML {
 	 * Aesthetic positioning of bends in the connection link between processors
 	 */
 	public List<String> position;
+	
+	/**
+	 * Only for Jackson deserialization
+	 */
+	public InputConnectionYML() {}
 
 	public InputConnectionYML(ConnectionEntity connection) {
 		this.properties = new TreeMap<>();

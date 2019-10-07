@@ -15,4 +15,6 @@ public class TemplateYML {
 	
 	public List<ElementYML> components = new ArrayList<ElementYML>();
 		
+	
+	public TemplateYML() {}
 }

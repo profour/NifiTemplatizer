@@ -99,6 +99,11 @@ public class ElementYML {
 		handlePosition(position);
 		handleConnections(inputs);
 	}
+	
+	/**
+	 * Don't use. Only for deserialization.
+	 */
+	public ElementYML() {}
 
 	/**
 	 * Creates a YAML representation for a single ProcessorEntity
@@ -229,6 +234,10 @@ public class ElementYML {
 		this.styles.put(HelperYML.HEIGHT, String.format("%.0f", l.getComponent().getHeight()));
 
 		handleStyles(l.getComponent().getStyle());
+	}
+	
+	public String getType() {
+		return (this.type != null) ? type : name;
 	}
 
 	/*

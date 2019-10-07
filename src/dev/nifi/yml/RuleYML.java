@@ -20,6 +20,10 @@ public class RuleYML {
 	 */
 	public Map<String, String> actions;
 
+	/**
+	 * Don't use. Only for deserialization.
+	 */
+	public RuleYML() {}
 
 	public RuleYML(List<Conditions> conditions, List<Actions> actions) {
 		this.conditions = new ArrayList<String>();

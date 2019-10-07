@@ -17,6 +17,11 @@ public class ControllerYML {
 	
 	public Map<String, Object> properties;
 	
+	/**
+	 * Only for deserialization
+	 */
+	public ControllerYML() {}
+	
 	public ControllerYML(ControllerServiceEntity controller, String dependencyReference) {
 		ControllerServiceDTO dto = controller.getComponent();
 		
