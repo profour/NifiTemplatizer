@@ -205,9 +205,27 @@ public class ElementYML {
 			this.styles = new TreeMap<>();
 		}
 
-		for (String s : styles.keySet()) {
-			String val = styles.get(s);
-			this.styles.put(s, val);
+		// Look at all styles and check if any are non-default values
+		for (String key : styles.keySet()) {
+			String value = styles.get(key);
+			
+			// Check if the key-value pairs are simply the default values
+			// Continue on to the next key-value pair if they are the defaults
+			switch (key) {
+			case HelperYML.FONT_SIZE:
+				if (HelperYML.DEFAULT_STYLE_FONT_SIZE.equals(value)) {
+					continue;
+				}
+				break;
+			case HelperYML.BG_COLOR:
+				if (HelperYML.DEFAULT_STYLE_COLOR.equals(value)) {
+					continue;
+				}
+				break;
+			}
+			
+			// Only store the value if it is different from the default
+			this.styles.put(key, value);
 		}
 	}
 
