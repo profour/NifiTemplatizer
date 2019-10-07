@@ -154,17 +154,30 @@ public class ElementYML {
 		this.comment = config.getComments();
 
 		this.properties = new TreeMap<>();
-		this.properties.put("targetUris", config.getTargetUris());
+		
+		// Remote Hosts hosting the RemoteProcessGroup
+		if (config.getTargetUris() != null && !config.getTargetUris().isEmpty()) {
+			this.properties.put("targetUris", config.getTargetUris());
+		}
 		
 		// Proxy settings
-		this.properties.put("proxyHost", config.getProxyHost());
+		if (config.getProxyHost() != null && !config.getProxyHost().isEmpty()) {
+			this.properties.put("proxyHost", config.getProxyHost());
+		}
 		if (config.getProxyPort() != null) {
 			this.properties.put("proxyPort", config.getProxyPort().toString());
 		}
-		this.properties.put("proxyUser", config.getProxyUser());
-		this.properties.put("proxyPassword", config.getProxyPassword());
+		if (config.getProxyUser() != null && !config.getProxyUser().isEmpty()) {
+			this.properties.put("proxyUser", config.getProxyUser());
+		}
+		if (config.getProxyPassword() != null && !config.getProxyPassword().isEmpty()) {
+			this.properties.put("proxyPassword", config.getProxyPassword());
+		}
 		
-		this.properties.put("network", config.getLocalNetworkInterface());
+		// General Network settings
+		if (config.getLocalNetworkInterface() != null && !config.getLocalNetworkInterface().isEmpty()) {
+			this.properties.put("network", config.getLocalNetworkInterface());
+		}
 		if (!HelperYML.DEFAULT_REMOTE_TRANSPORT.equals(config.getTransportProtocol())) {
 			this.properties.put("protocol", config.getTransportProtocol());
 		}
