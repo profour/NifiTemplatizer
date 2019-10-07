@@ -10,7 +10,9 @@ import java.util.Map;
 import org.apache.nifi.api.toolkit.ApiException;
 import org.apache.nifi.api.toolkit.api.FlowApi;
 import org.apache.nifi.api.toolkit.api.ProcessGroupsApi;
+import org.apache.nifi.api.toolkit.api.RemoteProcessGroupsApi;
 import org.apache.nifi.api.toolkit.model.ConnectionEntity;
+import org.apache.nifi.api.toolkit.model.ConnectionEntity.DestinationTypeEnum;
 import org.apache.nifi.api.toolkit.model.ConnectionsEntity;
 import org.apache.nifi.api.toolkit.model.ControllerServiceEntity;
 import org.apache.nifi.api.toolkit.model.ControllerServicesEntity;
@@ -25,6 +27,8 @@ import org.apache.nifi.api.toolkit.model.ProcessGroupEntity;
 import org.apache.nifi.api.toolkit.model.ProcessGroupsEntity;
 import org.apache.nifi.api.toolkit.model.ProcessorEntity;
 import org.apache.nifi.api.toolkit.model.ProcessorsEntity;
+import org.apache.nifi.api.toolkit.model.RemoteProcessGroupEntity;
+import org.apache.nifi.api.toolkit.model.RemoteProcessGroupsEntity;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonGenerationException;
@@ -77,6 +81,8 @@ public class NifiExportTemplates {
 		
 		ProcessGroupsApi pgapi = new ProcessGroupsApi();
 		pgapi.getApiClient().setBasePath("http://localhost:8080/nifi-api");
+		RemoteProcessGroupsApi rpgapi = new RemoteProcessGroupsApi();
+		rpgapi.getApiClient().setBasePath("http://localhost:8080/nifi-api");
 		
 		// Pull all of the information we need to construct the template
 		ProcessorsEntity root = pgapi.getProcessors(processGroupId, false);
@@ -86,12 +92,17 @@ public class NifiExportTemplates {
 		InputPortsEntity ipe = pgapi.getInputPorts(processGroupId);
 		OutputPortsEntity ope = pgapi.getOutputPorts(processGroupId);
 		LabelsEntity lbe = pgapi.getLabels(processGroupId);
+		RemoteProcessGroupsEntity rpge = pgapi.getRemoteProcessGroups(processGroupId);
 		ControllerServicesEntity cse = fapi.getControllerServicesFromGroup(processGroupId, false, false);
 		
 		
 		Map<String, List<ConnectionEntity>> connectionLookup = new HashMap<>();
 		for (ConnectionEntity ce : connections.getConnections()) {
-			String destination = ce.getDestinationId();
+			// When dealing with a destination that is a remote process group, 
+			// the group id is the correct id, not the regular id
+			String destination = ce.getDestinationType() == 
+					DestinationTypeEnum.REMOTE_INPUT_PORT ? ce.getDestinationGroupId() : ce.getDestinationId();
+					
 			if (!connectionLookup.containsKey(destination)) {
 				connectionLookup.put(destination, new ArrayList<>());
 			}
@@ -145,6 +156,14 @@ public class NifiExportTemplates {
 			TemplateYML template = convertToTemplateYML(pg.getId(), allTemplates);
 			
 			ElementYML p = new ElementYML(pg, template.name, connectionLookup.get(pg.getId()));
+			rootPG.components.add(p);
+		}
+		
+		for (RemoteProcessGroupEntity rpg : rpge.getRemoteProcessGroups()) {
+			// We must refetch the remote process group information using the 
+			// RemoteProcessGroupAPI to get all details on ports
+			rpg = rpgapi.getRemoteProcessGroup(rpg.getId());
+			ElementYML p = new ElementYML(rpg, connectionLookup.get(rpg.getId()));
 			rootPG.components.add(p);
 		}
 		

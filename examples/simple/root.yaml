@@ -26,6 +26,14 @@ components:
   id: 1efb4eb6-016d-1000-b64d-9b488e1e69b6
   position: 1238,148
 
+- name: Remote out
+  type: OUTPUT_PORT
+  id: a3a5e4aa-016d-1000-d2c5-fd5d62faa688
+  position: 1860,984
+  inputs:
+  - source: bbff2dfb-016c-1000-40ba-cee0f076c9b4
+    fromPort: Output1
+
 - name: HandleHttpRequest
   id: 23824d3e-016d-1000-5737-859e01d8f5f1
   position: 192,167
@@ -80,6 +88,14 @@ components:
     relationships:
     - success
 
+- name: RemoteLogAttribute
+  type: LogAttribute
+  id: a3a6364e-016d-1000-4883-e2a710af8dbd
+  position: 1829,1111
+  inputs:
+  - source: a39044b5-016d-1000-6c5b-8ff48923c699
+    fromPort: Remote out
+
 - name: LogAttribute
   id: bbfea787-016c-1000-253a-647822a6106b
   position: 1891,681
@@ -127,3 +143,14 @@ components:
   template: bbfb5e15-016c-1000-24e9-c7827e34b838.yaml
   position: 1152,744
   comment: dsfgsdfg
+
+- name: NiFi Flow
+  type: REMOTE_PROCESS_GROUP
+  id: a39044b5-016d-1000-6c5b-8ff48923c699
+  position: 1142,1078
+  properties:
+    protocol: HTTP
+    targetUris: http://localhost:8080/nifi
+  inputs:
+  - source: bbff2dfb-016c-1000-40ba-cee0f076c9b4
+    fromPort: Output1

@@ -10,6 +10,7 @@ import org.apache.nifi.api.toolkit.model.ConnectionDTO;
 import org.apache.nifi.api.toolkit.model.ConnectionDTO.LoadBalanceCompressionEnum;
 import org.apache.nifi.api.toolkit.model.ConnectionDTO.LoadBalanceStrategyEnum;
 import org.apache.nifi.api.toolkit.model.ConnectionEntity;
+import org.apache.nifi.api.toolkit.model.ConnectionEntity.SourceTypeEnum;
 import org.apache.nifi.api.toolkit.model.PositionDTO;
 
 public class InputConnectionYML {
@@ -48,7 +49,10 @@ public class InputConnectionYML {
 
 	public InputConnectionYML(ConnectionEntity connection) {
 		this.properties = new TreeMap<>();
-		this.source = connection.getSourceId();
+		
+		// If the source is a REMOTE_OUTPUT_PORT, we should reference the (remote) group id, rather than the regular id
+		this.source = connection.getSourceType() == 
+				SourceTypeEnum.REMOTE_OUTPUT_PORT ? connection.getSourceGroupId() : connection.getSourceId();
 		
 		ConnectionDTO conn = connection.getComponent();
 		

@@ -15,6 +15,9 @@ import org.apache.nifi.api.toolkit.model.ProcessGroupEntity;
 import org.apache.nifi.api.toolkit.model.ProcessorConfigDTO;
 import org.apache.nifi.api.toolkit.model.ProcessorEntity;
 import org.apache.nifi.api.toolkit.model.PropertyDescriptorDTO;
+import org.apache.nifi.api.toolkit.model.RemoteProcessGroupContentsDTO;
+import org.apache.nifi.api.toolkit.model.RemoteProcessGroupDTO;
+import org.apache.nifi.api.toolkit.model.RemoteProcessGroupEntity;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
@@ -136,6 +139,44 @@ public class ElementYML {
 		// ProcessGroup
 		this.template = templateName + ".yaml";
 		this.comment = pg.getComponent().getComments();
+	}
+
+	/**
+	 * Creates a YAML representation for a single Remote ProcessGroup
+	 * @param rpg RemoteProcessGroup configuration data from NiFi's API
+	 * @param list All input connections for this RemoteProcessGroup
+	 */
+	public ElementYML(RemoteProcessGroupEntity rpg, List<ConnectionEntity> inputs) {
+		this(rpg.getId(), rpg.getComponent().getName(), HelperYML.ReservedComponents.REMOTE_PROCESS_GROUP.name(),
+				rpg.getPosition(), inputs);
+		
+		RemoteProcessGroupDTO config = rpg.getComponent();
+		this.comment = config.getComments();
+
+		this.properties = new TreeMap<>();
+		this.properties.put("targetUris", config.getTargetUris());
+		
+		// Proxy settings
+		this.properties.put("proxyHost", config.getProxyHost());
+		if (config.getProxyPort() != null) {
+			this.properties.put("proxyPort", config.getProxyPort().toString());
+		}
+		this.properties.put("proxyUser", config.getProxyUser());
+		this.properties.put("proxyPassword", config.getProxyPassword());
+		
+		this.properties.put("network", config.getLocalNetworkInterface());
+		if (!HelperYML.DEFAULT_REMOTE_TRANSPORT.equals(config.getTransportProtocol())) {
+			this.properties.put("protocol", config.getTransportProtocol());
+		}
+		if (!HelperYML.DEFAULT_REMOTE_TIMEOUT.equals(config.getCommunicationsTimeout())) {
+			this.properties.put("timeout", config.getCommunicationsTimeout());
+		}
+		if (!HelperYML.DEFAULT_REMOTE_YIELD.equals(config.getYieldDuration())) {
+			this.properties.put("yieldDuration", config.getYieldDuration());
+		}
+		
+		// TODO: It is possible to configure settings on the remote ports of a RemoteProcessGroup
+		// RemoteProcessGroupContentsDTO remotePortConfigs = config.getContents();
 	}
 
 	/**

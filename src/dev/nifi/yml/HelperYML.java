@@ -6,6 +6,7 @@ public class HelperYML {
 		INPUT_PORT,
 		OUTPUT_PORT,
 		PROCESS_GROUP, 
+		REMOTE_PROCESS_GROUP,
 		FUNNEL, 
 		LABEL
 	}
@@ -21,4 +22,9 @@ public class HelperYML {
 	public static final String HEIGHT = "height";
 	public static final String BG_COLOR = "background-color";
 	public static final String FONT_SIZE = "font-size";
+	
+	// Remote Process Group Defaults
+	public static final String DEFAULT_REMOTE_TRANSPORT = "RAW";
+	public static final String DEFAULT_REMOTE_TIMEOUT = "30 sec";
+	public static final String DEFAULT_REMOTE_YIELD = "10 sec";
 }
