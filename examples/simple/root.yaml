@@ -154,3 +154,4 @@ components:
   inputs:
   - source: bbff2dfb-016c-1000-40ba-cee0f076c9b4
     fromPort: Output1
+    toPort: Remote Input

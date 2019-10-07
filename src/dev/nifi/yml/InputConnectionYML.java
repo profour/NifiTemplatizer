@@ -61,6 +61,8 @@ public class InputConnectionYML {
 		// If our input is coming from another process group, we need to identify the port name
 		if (conn.getSource().getType() == TypeEnum.OUTPUT_PORT || conn.getSource().getType() == TypeEnum.REMOTE_OUTPUT_PORT || conn.getSource().getType() == TypeEnum.FUNNEL) {
 			this.fromPort = conn.getSource().getName();
+		}if (conn.getDestination().getType() == TypeEnum.INPUT_PORT || conn.getDestination().getType() == TypeEnum.REMOTE_INPUT_PORT) {
+			this.toPort = conn.getDestination().getName();
 		}
 		
 		// See if any manual position of the link was performed (aesthetic only)
