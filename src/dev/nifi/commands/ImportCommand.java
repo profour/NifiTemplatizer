@@ -1,4 +1,4 @@
-package dev.nifi.api;
+package dev.nifi.commands;
 
 import java.io.File;
 import java.io.IOException;
