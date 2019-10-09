@@ -36,6 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 
+import dev.nifi.utils.DependencyBuilder;
 import dev.nifi.yml.ControllerYML;
 import dev.nifi.yml.ElementYML;
 import dev.nifi.yml.TemplateYML;
