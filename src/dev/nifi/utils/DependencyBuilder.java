@@ -1,4 +1,4 @@
-package dev.nifi.commands;
+package dev.nifi.utils;
 
 import java.util.HashMap;
 import java.util.List;
