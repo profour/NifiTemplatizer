@@ -39,31 +39,22 @@ public class ClearCommand extends BaseCommand {
 	private final String clientId = UUID.randomUUID().toString();
 	
 
-	private final FlowApi flowAPI = new FlowApi();
-	private final FlowfileQueuesApi flowFileQueuesAPI = new FlowfileQueuesApi();
-	private final ConnectionsApi connectionAPI = new ConnectionsApi();
-	private final ProcessorsApi processorAPI = new ProcessorsApi();
-	private final FunnelApi funnelAPI = new FunnelApi();
-	private final InputPortsApi inputAPI = new InputPortsApi();
-	private final OutputPortsApi outputAPI = new OutputPortsApi();
-	private final LabelsApi labelAPI = new LabelsApi();
-	private final ProcessGroupsApi processGroupAPI = new ProcessGroupsApi();
-	private final RemoteProcessGroupsApi remoteGroupAPI = new RemoteProcessGroupsApi();
-	private final ControllerServicesApi controllerServiceAPI = new ControllerServicesApi();
+	private final FlowApi flowAPI = new FlowApi(getApiClient());
+	private final FlowfileQueuesApi flowFileQueuesAPI = new FlowfileQueuesApi(getApiClient());
+	private final ConnectionsApi connectionAPI = new ConnectionsApi(getApiClient());
+	private final ProcessorsApi processorAPI = new ProcessorsApi(getApiClient());
+	private final FunnelApi funnelAPI = new FunnelApi(getApiClient());
+	private final InputPortsApi inputAPI = new InputPortsApi(getApiClient());
+	private final OutputPortsApi outputAPI = new OutputPortsApi(getApiClient());
+	private final LabelsApi labelAPI = new LabelsApi(getApiClient());
+	private final ProcessGroupsApi processGroupAPI = new ProcessGroupsApi(getApiClient());
+	private final RemoteProcessGroupsApi remoteGroupAPI = new RemoteProcessGroupsApi(getApiClient());
+	private final ControllerServicesApi controllerServiceAPI = new ControllerServicesApi(getApiClient());
 	
 	private final SetStatusCommand disableCommand = new SetStatusCommand(false);
 	
 	public ClearCommand() {
 		super();
-		
-		// Add the clients needed for this clear command
-		addApiClients(flowAPI.getApiClient(), flowFileQueuesAPI.getApiClient(), processGroupAPI.getApiClient(), 
-				connectionAPI.getApiClient(), processorAPI.getApiClient(), funnelAPI.getApiClient(), 
-				inputAPI.getApiClient(), outputAPI.getApiClient(), labelAPI.getApiClient(), 
-				remoteGroupAPI.getApiClient(), controllerServiceAPI.getApiClient());
-		
-		// Add all of the disable command's clients as well
-		addApiClients(disableCommand.getApiClients());
 	}
 
 	@Override

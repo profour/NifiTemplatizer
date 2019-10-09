@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.nifi.api.toolkit.ApiException;
-import org.apache.nifi.api.toolkit.api.FlowApi;
 import org.apache.nifi.api.toolkit.api.ProcessGroupsApi;
 import org.apache.nifi.api.toolkit.model.BundleDTO;
 import org.apache.nifi.api.toolkit.model.FunnelDTO;
@@ -43,9 +42,7 @@ public class ImportCommand extends BaseCommand {
 	
 	private final UUID clientId = UUID.randomUUID();
 
-
-	private final FlowApi fapi = new FlowApi();
-	private final ProcessGroupsApi pgapi = new ProcessGroupsApi();
+	private final ProcessGroupsApi processGroupAPI = new ProcessGroupsApi(getApiClient());
 	
 	private final String importDir;
 	
@@ -57,15 +54,19 @@ public class ImportCommand extends BaseCommand {
 		} else {
 			this.importDir = importDir;
 		}
-		
-		addApiClients(fapi.getApiClient(), pgapi.getApiClient());
-		
 	}
 
 	@Override
 	public void run() {
 		try {
-			importTemplates(importDir);
+			// Load templates from disk
+			List<TemplateYML> templates = loadTemplates(importDir);
+
+			// TODO: Consider using these to determine if all dependencies are available
+			// ControllerServiceTypesEntity cs = fapi.getControllerServiceTypes(null, null, null, null, null, null, null);
+			// ProcessorTypesEntity pt = fapi.getProcessorTypes(null, null, null);
+			
+			importTemplates(templates);
 		} catch (JsonParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -81,14 +82,8 @@ public class ImportCommand extends BaseCommand {
 		}
 	}
 	
-	private void importTemplates(final String importDir) throws ApiException, JsonParseException, JsonMappingException, IOException {
-		// Load templates from disk
-		List<TemplateYML> templates = loadTemplates(importDir);
-
-		// TODO: Consider using these to determine if all dependencies are available
-		// ControllerServiceTypesEntity cs = fapi.getControllerServiceTypes(null, null, null, null, null, null, null);
-		// ProcessorTypesEntity pt = fapi.getProcessorTypes(null, null, null);
-
+	private void importTemplates(List<TemplateYML> templates) throws ApiException {
+		
 		for (TemplateYML template : templates) {
 			if (!template.name.equals("root")) {
 				continue;
@@ -153,7 +148,7 @@ public class ImportCommand extends BaseCommand {
 
 		dto.setPosition(position);
 		
-		pgapi.createFunnel("root", funnel);
+		processGroupAPI.createFunnel("root", funnel);
 	}
 	
 	private void makeProcessGroup(PositionDTO position, ElementYML ele) throws ApiException {
@@ -166,7 +161,7 @@ public class ImportCommand extends BaseCommand {
 		dto.setPosition(position);
 		dto.setName(ele.name);
 		
-		pgapi.createProcessGroup("root", pg);
+		processGroupAPI.createProcessGroup("root", pg);
 	}
 	
 	private void makeRemoteProcessGroup(PositionDTO position, ElementYML ele) throws ApiException {
@@ -179,7 +174,7 @@ public class ImportCommand extends BaseCommand {
 		dto.setPosition(position);
 		dto.setTargetUris(ele.properties.get("targetUris"));
 		
-		pgapi.createRemoteProcessGroup("root", rpg);
+		processGroupAPI.createRemoteProcessGroup("root", rpg);
 	}
 	
 	private void makeOutputPort(PositionDTO position, ElementYML ele) throws ApiException {
@@ -192,7 +187,7 @@ public class ImportCommand extends BaseCommand {
 		dto.setPosition(position);
 		dto.setName(ele.name);
 		
-		pgapi.createOutputPort("root", port);
+		processGroupAPI.createOutputPort("root", port);
 	}
 	
 	private void makeInputPort(PositionDTO position, ElementYML ele) throws ApiException {
@@ -205,7 +200,7 @@ public class ImportCommand extends BaseCommand {
 		dto.setPosition(position);
 		dto.setName(ele.name);
 		
-		pgapi.createInputPort("root", port);
+		processGroupAPI.createInputPort("root", port);
 	}
 	
 	private void makeLabel(PositionDTO position, ElementYML ele) throws ApiException {
@@ -218,7 +213,7 @@ public class ImportCommand extends BaseCommand {
 		dto.setPosition(position);
 		dto.setLabel(ele.comment);
 		
-		pgapi.createLabel("root", label);
+		processGroupAPI.createLabel("root", label);
 	}
 
 	private void makeProcessor(String id, String type, String name, BundleDTO bundle, PositionDTO position) throws ApiException {
@@ -234,7 +229,7 @@ public class ImportCommand extends BaseCommand {
 		dto.setName(name);
 		dto.setPosition(position);
 		
-		pgapi.createProcessor("root", p);
+		processGroupAPI.createProcessor("root", p);
 	}
 
 	

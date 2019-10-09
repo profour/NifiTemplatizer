@@ -32,13 +32,13 @@ public class SetStatusCommand extends BaseCommand {
 	
 	private final String clientId = UUID.randomUUID().toString();
 
-	private final FlowApi flowAPI = new FlowApi();
-	private final ProcessorsApi processorAPI = new ProcessorsApi();
-	private final ProcessGroupsApi processGroupAPI = new ProcessGroupsApi();
-	private final RemoteProcessGroupsApi remoteProcessGroupAPI = new RemoteProcessGroupsApi();
-	private final InputPortsApi inputPortAPI = new InputPortsApi();
-	private final OutputPortsApi outputPortAPI = new OutputPortsApi();
-	private final ControllerServicesApi controllerServiceAPI = new ControllerServicesApi();
+	private final FlowApi flowAPI = new FlowApi(getApiClient());
+	private final ProcessorsApi processorAPI = new ProcessorsApi(getApiClient());
+	private final ProcessGroupsApi processGroupAPI = new ProcessGroupsApi(getApiClient());
+	private final RemoteProcessGroupsApi remoteProcessGroupAPI = new RemoteProcessGroupsApi(getApiClient());
+	private final InputPortsApi inputPortAPI = new InputPortsApi(getApiClient());
+	private final OutputPortsApi outputPortAPI = new OutputPortsApi(getApiClient());
+	private final ControllerServicesApi controllerServiceAPI = new ControllerServicesApi(getApiClient());
 	
 	private final boolean enabled;
 	
@@ -46,11 +46,6 @@ public class SetStatusCommand extends BaseCommand {
 		super();
 		
 		this.enabled = enabled;
-		
-		// Register all of the ApiClients with the base command class
-		addApiClients(flowAPI.getApiClient(), processorAPI.getApiClient(), processGroupAPI.getApiClient(), 
-				inputPortAPI.getApiClient(), outputPortAPI.getApiClient(),
-				remoteProcessGroupAPI.getApiClient(), controllerServiceAPI.getApiClient());
 	}
 
 

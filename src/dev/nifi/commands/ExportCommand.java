@@ -44,9 +44,9 @@ import dev.nifi.yml.TemplateYML;
 
 public class ExportCommand extends BaseCommand {
 
-	private final FlowApi flowAPI = new FlowApi();
-	private final ProcessGroupsApi processGroupAPI = new ProcessGroupsApi();
-	private final RemoteProcessGroupsApi remoteGroupAPI = new RemoteProcessGroupsApi();
+	private final FlowApi flowAPI = new FlowApi(getApiClient());
+	private final ProcessGroupsApi processGroupAPI = new ProcessGroupsApi(getApiClient());
+	private final RemoteProcessGroupsApi remoteGroupAPI = new RemoteProcessGroupsApi(getApiClient());
 
 	private final String outputDir;
 	
@@ -59,8 +59,6 @@ public class ExportCommand extends BaseCommand {
 		} else {
 			this.outputDir = outputDir;
 		}
-		
-		addApiClients(flowAPI.getApiClient(), processGroupAPI.getApiClient(), remoteGroupAPI.getApiClient());
 	}
 
 	@Override
