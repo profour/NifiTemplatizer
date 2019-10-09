@@ -1,6 +1,5 @@
 package dev.nifi.commands;
 
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.nifi.api.toolkit.ApiException;
@@ -35,9 +34,6 @@ import org.apache.nifi.api.toolkit.model.RemoteProcessGroupEntity;
 import org.apache.nifi.api.toolkit.model.RemoteProcessGroupsEntity;
 
 public class ClearCommand extends BaseCommand {
-
-	private final String clientId = UUID.randomUUID().toString();
-	
 
 	private final FlowApi flowAPI = new FlowApi(getApiClient());
 	private final FlowfileQueuesApi flowFileQueuesAPI = new FlowfileQueuesApi(getApiClient());
@@ -96,48 +92,48 @@ public class ClearCommand extends BaseCommand {
 				}
 				dropQueue = flowFileQueuesAPI.getDropRequest(conn.getId(), dropQueue.getDropRequest().getId());
 			}
-			connectionAPI.deleteConnection(conn.getId(), ""+conn.getRevision().getVersion(), clientId, true);
+			connectionAPI.deleteConnection(conn.getId(), ""+conn.getRevision().getVersion(), getClientId(), true);
 		}
 
 		for (ProcessorEntity p : root.getProcessors()) {
-			processorAPI.deleteProcessor(p.getId(), ""+p.getRevision().getVersion(), clientId, false);
+			processorAPI.deleteProcessor(p.getId(), ""+p.getRevision().getVersion(), getClientId(), false);
 		}
 		
 		for (FunnelEntity fn : funnels.getFunnels()) {
-			funnelAPI.removeFunnel(fn.getId(), ""+fn.getRevision().getVersion(), clientId, false);
+			funnelAPI.removeFunnel(fn.getId(), ""+fn.getRevision().getVersion(), getClientId(), false);
 		}
 		
 		for (ProcessGroupEntity pg : pge.getProcessGroups()) {
 			// Recurse into the Process group first and remove all its innards
 			clear(pg.getId());
-			processGroupAPI.removeProcessGroup(pg.getId(), ""+pg.getRevision().getVersion(), clientId, false);
+			processGroupAPI.removeProcessGroup(pg.getId(), ""+pg.getRevision().getVersion(), getClientId(), false);
 		}
 		
 		for (PortEntity p : ipe.getInputPorts()) {
-			inputAPI.removeInputPort(p.getId(), ""+p.getRevision().getVersion(), clientId, false);
+			inputAPI.removeInputPort(p.getId(), ""+p.getRevision().getVersion(), getClientId(), false);
 		}
 		
 		for (PortEntity p : ope.getOutputPorts()) {
-			outputAPI.removeOutputPort(p.getId(), ""+p.getRevision().getVersion(), clientId, false);
+			outputAPI.removeOutputPort(p.getId(), ""+p.getRevision().getVersion(), getClientId(), false);
 		}
 		
 		for (LabelEntity l : lbe.getLabels()) {
-			labelAPI.removeLabel(l.getId(), ""+l.getRevision().getVersion(), clientId, false);
+			labelAPI.removeLabel(l.getId(), ""+l.getRevision().getVersion(), getClientId(), false);
 		}
 		
 		for (RemoteProcessGroupEntity rpg : rpge.getRemoteProcessGroups()) {
-			remoteGroupAPI.removeRemoteProcessGroup(rpg.getId(), ""+rpg.getRevision().getVersion(), clientId, false);
+			remoteGroupAPI.removeRemoteProcessGroup(rpg.getId(), ""+rpg.getRevision().getVersion(), getClientId(), false);
 		}
 		
 		for (ControllerServiceEntity cs : cse.getControllerServices()) {
-			controllerServiceAPI.removeControllerService(cs.getId(), ""+cs.getRevision().getVersion(), clientId, false);
+			controllerServiceAPI.removeControllerService(cs.getId(), ""+cs.getRevision().getVersion(), getClientId(), false);
 		}
 	}
 	
 	// Tester main method
 	public static void main(String[] args) {
+		BaseCommand.configureApiClients("localhost", "8080", false);
 		ClearCommand command = new ClearCommand();
-		command.configureApiClients("localhost", "8080", false);
 		command.run();
 	}
 }

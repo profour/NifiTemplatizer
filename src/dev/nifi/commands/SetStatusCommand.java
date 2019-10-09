@@ -1,7 +1,5 @@
 package dev.nifi.commands;
 
-import java.util.UUID;
-
 import org.apache.nifi.api.toolkit.ApiException;
 import org.apache.nifi.api.toolkit.api.ControllerServicesApi;
 import org.apache.nifi.api.toolkit.api.FlowApi;
@@ -29,8 +27,6 @@ import org.apache.nifi.api.toolkit.model.RemoteProcessGroupsEntity;
 import org.apache.nifi.api.toolkit.model.RevisionDTO;
 
 public class SetStatusCommand extends BaseCommand {
-	
-	private final String clientId = UUID.randomUUID().toString();
 
 	private final FlowApi flowAPI = new FlowApi(getApiClient());
 	private final ProcessorsApi processorAPI = new ProcessorsApi(getApiClient());
@@ -111,8 +107,6 @@ public class SetStatusCommand extends BaseCommand {
 	}
 	
 	private void setStatusInputPort(PortEntity input, boolean enabled) throws ApiException {
-		
-		
 		PortRunStatusEntity stat = new PortRunStatusEntity();
 		stat.setState(enabled ? PortRunStatusEntity.StateEnum.RUNNING : PortRunStatusEntity.StateEnum.STOPPED);
 		stat.setRevision(createRevision(input.getRevision().getVersion()));
@@ -143,15 +137,16 @@ public class SetStatusCommand extends BaseCommand {
 	// Helper method to create revision DTOs that all updateStatus requests require
 	private RevisionDTO createRevision(long revision) {
 		RevisionDTO dto = new RevisionDTO();
-		dto.setClientId(clientId);
+		dto.setClientId(getClientId());
 		dto.setVersion(revision);
 		return dto;
 	}
 	
 	// Tester main method
 	public static void main(String[] args) {
+		BaseCommand.configureApiClients("localhost", "8080", false);
+		
 		SetStatusCommand command = new SetStatusCommand(true);
-		command.configureApiClients("localhost", "8080", false);
 		command.run();
 	}
 }

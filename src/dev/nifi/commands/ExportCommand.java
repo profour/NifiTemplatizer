@@ -197,8 +197,9 @@ public class ExportCommand extends BaseCommand {
 	}
 	
 	public static void main(String[] args) {
+		BaseCommand.configureApiClients("localhost", "8080", false);
+		
 		ExportCommand command = new ExportCommand("./examples/simple/");
-		command.configureApiClients("localhost", "8080", false);
 		command.run();
 	}
 }

@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.apache.nifi.api.toolkit.ApiException;
 import org.apache.nifi.api.toolkit.api.ProcessGroupsApi;
@@ -39,8 +38,6 @@ import dev.nifi.yml.HelperYML.ReservedComponents;
 import dev.nifi.yml.TemplateYML;
 
 public class ImportCommand extends BaseCommand {
-	
-	private final UUID clientId = UUID.randomUUID();
 
 	private final ProcessGroupsApi processGroupAPI = new ProcessGroupsApi(getApiClient());
 	
@@ -284,15 +281,16 @@ public class ImportCommand extends BaseCommand {
 	
 	private RevisionDTO getRevision() {
 		RevisionDTO rev = new RevisionDTO();
-		rev.setClientId(clientId.toString());
+		rev.setClientId(getClientId());
 		rev.setVersion(0L);
 		return rev;
 	}
 	
 	// Tester main method
 	public static void main(String[] args) {
+		BaseCommand.configureApiClients("localhost", "8080", false);
+		
 		ImportCommand command = new ImportCommand("./examples/simple/");
-		command.configureApiClients("localhost", "8080", false);
 		command.run();
 	}
 }
