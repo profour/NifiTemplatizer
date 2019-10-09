@@ -1,5 +1,6 @@
 package dev.nifi.api;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,8 +32,6 @@ import org.apache.nifi.api.toolkit.model.RemoteProcessGroupEntity;
 import org.apache.nifi.api.toolkit.model.RemoteProcessGroupsEntity;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
@@ -42,58 +41,60 @@ import dev.nifi.yml.ElementYML;
 import dev.nifi.yml.TemplateYML;
 
 
-public class NifiExportTemplates {
+public class ExportCommand extends BaseCommand {
 
+	private final FlowApi flowAPI = new FlowApi();
+	private final ProcessGroupsApi processGroupAPI = new ProcessGroupsApi();
+	private final RemoteProcessGroupsApi remoteGroupAPI = new RemoteProcessGroupsApi();
 
-	public static void main(String[] args) throws ApiException, JsonGenerationException, JsonMappingException, IOException {
+	private final String outputDir;
+	
+	public ExportCommand(String outputDir) {
+		super();
 		
-		// Start from the root and work our way down converting all process groups into templates
-		List<TemplateYML> templates = new ArrayList<TemplateYML>();
-		convertToTemplateYML("root", templates);
+		if (outputDir == null) {
+			// Default to current directory if nothing provided
+			this.outputDir = ".";
+		} else {
+			this.outputDir = outputDir;
+		}
 		
-		YAMLFactory f = new YAMLFactory();
-		f.enable(YAMLGenerator.Feature.MINIMIZE_QUOTES);
-		f.disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER);
-		ObjectMapper mapper = new ObjectMapper(f);
-		
-		mapper.setSerializationInclusion(Include.NON_EMPTY);
-		
-		for (TemplateYML template : templates) {
-			String yaml = mapper.writer().writeValueAsString(template);
+		addApiClients(flowAPI.getApiClient(), processGroupAPI.getApiClient(), remoteGroupAPI.getApiClient());
+	}
+
+	@Override
+	public void run() {
+
+		try {
+			// Start from the root and work our way down converting all process groups into templates
+			List<TemplateYML> templates = new ArrayList<TemplateYML>();
 			
-			// Formatting to make it easier to read the templates
-			yaml = yaml.replaceAll("\n-", "\n\n-");
-			yaml = yaml.replace("\ndependencies:", "\n\ndependencies:");
-			yaml = yaml.replace("\ncontrollers:", "\n\ncontrollers:");
-			yaml = yaml.replace("\ncontrollers:\n", "\ncontrollers:");
-			yaml = yaml.replace("\ncomponents:", "\n\ncomponents:");
-			yaml = yaml.replace("\ncomponents:\n", "\ncomponents:");
+			convertToTemplateYML("root", templates);
 			
-			try (FileWriter writer = new FileWriter(template.name + ".yaml")) {
-				writer.write(yaml);
-			}
+			// TODO: Look for structural duplicates in the templates and attempt to extract a common (parameterized) version
+			
+			export(templates);
+		} catch (ApiException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
-	public static TemplateYML convertToTemplateYML(String processGroupId, List<TemplateYML> allTemplates) throws ApiException {
-		FlowApi fapi = new FlowApi();
-		fapi.getApiClient().setBasePath("http://localhost:8080/nifi-api"); 
-		
-		ProcessGroupsApi pgapi = new ProcessGroupsApi();
-		pgapi.getApiClient().setBasePath("http://localhost:8080/nifi-api");
-		RemoteProcessGroupsApi rpgapi = new RemoteProcessGroupsApi();
-		rpgapi.getApiClient().setBasePath("http://localhost:8080/nifi-api");
+	private TemplateYML convertToTemplateYML(String processGroupId, List<TemplateYML> allTemplates) throws ApiException {
 		
 		// Pull all of the information we need to construct the template
-		ProcessorsEntity root = pgapi.getProcessors(processGroupId, false);
-		ConnectionsEntity connections = pgapi.getConnections(processGroupId);
-		FunnelsEntity funnels = pgapi.getFunnels(processGroupId);
-		ProcessGroupsEntity pge = pgapi.getProcessGroups(processGroupId);
-		InputPortsEntity ipe = pgapi.getInputPorts(processGroupId);
-		OutputPortsEntity ope = pgapi.getOutputPorts(processGroupId);
-		LabelsEntity lbe = pgapi.getLabels(processGroupId);
-		RemoteProcessGroupsEntity rpge = pgapi.getRemoteProcessGroups(processGroupId);
-		ControllerServicesEntity cse = fapi.getControllerServicesFromGroup(processGroupId, false, false);
+		ProcessorsEntity root = processGroupAPI.getProcessors(processGroupId, false);
+		ConnectionsEntity connections = processGroupAPI.getConnections(processGroupId);
+		FunnelsEntity funnels = processGroupAPI.getFunnels(processGroupId);
+		ProcessGroupsEntity pge = processGroupAPI.getProcessGroups(processGroupId);
+		InputPortsEntity ipe = processGroupAPI.getInputPorts(processGroupId);
+		OutputPortsEntity ope = processGroupAPI.getOutputPorts(processGroupId);
+		LabelsEntity lbe = processGroupAPI.getLabels(processGroupId);
+		RemoteProcessGroupsEntity rpge = processGroupAPI.getRemoteProcessGroups(processGroupId);
+		ControllerServicesEntity cse = flowAPI.getControllerServicesFromGroup(processGroupId, false, false);
 		
 		
 		Map<String, List<ConnectionEntity>> connectionLookup = new HashMap<>();
@@ -163,7 +164,7 @@ public class NifiExportTemplates {
 		for (RemoteProcessGroupEntity rpg : rpge.getRemoteProcessGroups()) {
 			// We must refetch the remote process group information using the 
 			// RemoteProcessGroupAPI to get all details on ports
-			rpg = rpgapi.getRemoteProcessGroup(rpg.getId());
+			rpg = remoteGroupAPI.getRemoteProcessGroup(rpg.getId());
 			ElementYML p = new ElementYML(rpg, connectionLookup.get(rpg.getId()));
 			rootPG.components.add(p);
 		}
@@ -171,4 +172,34 @@ public class NifiExportTemplates {
 		return rootPG;
 	}
 	
+	private void export(List<TemplateYML> templates) throws IOException {
+		YAMLFactory f = new YAMLFactory();
+		f.enable(YAMLGenerator.Feature.MINIMIZE_QUOTES);
+		f.disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER);
+		ObjectMapper mapper = new ObjectMapper(f);
+		
+		mapper.setSerializationInclusion(Include.NON_EMPTY);
+		
+		for (TemplateYML template : templates) {
+			String yaml = mapper.writer().writeValueAsString(template);
+			
+			// Formatting to make it easier to read the templates
+			yaml = yaml.replaceAll("\n-", "\n\n-");
+			yaml = yaml.replace("\ndependencies:", "\n\ndependencies:");
+			yaml = yaml.replace("\ncontrollers:", "\n\ncontrollers:");
+			yaml = yaml.replace("\ncontrollers:\n", "\ncontrollers:");
+			yaml = yaml.replace("\ncomponents:", "\n\ncomponents:");
+			yaml = yaml.replace("\ncomponents:\n", "\ncomponents:");
+			
+			try (FileWriter writer = new FileWriter(outputDir + File.separator + template.name + ".yaml")) {
+				writer.write(yaml);
+			}
+		}
+	}
+	
+	public static void main(String[] args) {
+		ExportCommand command = new ExportCommand(null);
+		command.configureApiClients("localhost", "8080", false);
+		command.run();
+	}
 }
