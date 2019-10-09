@@ -16,44 +16,57 @@ dependencies:
 
 controllers:
 - name: StandardHttpContextMap
-  id: 2382b43c-016d-1000-93f1-1c790a99bf54
+  id: e148ee71-74e6-387e-9009-8c291cfe5b92
   properties:
     Maximum Outstanding Requests: 500
 
 components:
 - name: Remote Input
   type: INPUT_PORT
-  id: 1efb4eb6-016d-1000-b64d-9b488e1e69b6
-  position: 1238,148
+  id: a2a91b0f-fe85-39b7-616f-e151d56f883e
+  position: 2502,706
 
 - name: Remote out
   type: OUTPUT_PORT
-  id: a3a5e4aa-016d-1000-d2c5-fd5d62faa688
-  position: 1860,984
+  id: 2ba83dc5-4b22-38f0-6113-aeb5a2acd909
+  position: 3123,1541
   inputs:
   - source: bbfb5e15-016c-1000-24e9-c7827e34b838
-    fromPort: Output1
+    from:
+    - Output1
 
 - name: HandleHttpRequest
-  id: 23824d3e-016d-1000-5737-859e01d8f5f1
-  position: 192,167
+  type: HandleHttpRequest
+  id: aa1f6a5f-0f1e-37fe-12d9-67edf84558ca
+  position: 1456,724
   properties:
-    HTTP Context Map: 2382b43c-016d-1000-93f1-1c790a99bf54
+    HTTP Context Map: e148ee71-74e6-387e-9009-8c291cfe5b92
+
+- name: UpdateAttribute@2
+  type: UpdateAttribute
+  id: 5947ea14-3369-39b5-4c32-c020072f1cdf
+  position: 1978,745
+  inputs:
+  - source: aa1f6a5f-0f1e-37fe-12d9-67edf84558ca
+    from:
+    - success
 
 - name: HandleHttpResponse
-  id: 238281e7-016d-1000-ca4a-a2916e9df938
-  position: 2372,704
+  type: HandleHttpResponse
+  id: fc21ff2e-bb6b-36f2-ad25-693765feb650
+  position: 3636,1262
   properties:
-    HTTP Context Map: 2382b43c-016d-1000-93f1-1c790a99bf54
+    HTTP Context Map: e148ee71-74e6-387e-9009-8c291cfe5b92
     HTTP Status Code: 200
   inputs:
-  - source: bbfea787-016c-1000-253a-647822a6106b
-    relationships:
+  - source: 0ed325fb-3d55-3935-0a0a-7f6c0ea15913
+    from:
     - success
 
 - name: UpdateAttribute
-  id: bbfb226b-016c-1000-8d5e-95d3c69114da
-  position: 1177,396
+  type: UpdateAttribute
+  id: 5469f8d8-a039-38e6-a49c-edfef4c0bc7c
+  position: 2441,953
   comment: This is a comment about how UpdateAttribute works.
   properties:
     Store State: Store state locally
@@ -62,9 +75,9 @@ components:
   styles:
     background-color: '#e02020'
   inputs:
-  - source: 1efb4eb6-016d-1000-b64d-9b488e1e69b6
-  - source: 1f270bd0-016d-1000-2b76-e1368cc0c370
-    relationships:
+  - source: a2a91b0f-fe85-39b7-616f-e151d56f883e
+  - source: 5947ea14-3369-39b5-4c32-c020072f1cdf
+    from:
     - success
   advanced:
     policy: USE_CLONE
@@ -79,31 +92,19 @@ components:
       actions:
         otherValue: asdf@
 
-- name: UpdateAttribute@2
-  type: UpdateAttribute
-  id: 1f270bd0-016d-1000-2b76-e1368cc0c370
-  position: 714,188
-  inputs:
-  - source: 23824d3e-016d-1000-5737-859e01d8f5f1
-    relationships:
-    - success
-
-- name: RemoteLogAttribute
-  type: LogAttribute
-  id: a3a6364e-016d-1000-4883-e2a710af8dbd
-  position: 1829,1111
-  inputs:
-  - source: a39044b5-016d-1000-6c5b-8ff48923c699
-    fromPort: Remote out
-
 - name: LogAttribute
-  id: bbfea787-016c-1000-253a-647822a6106b
-  position: 1891,681
+  type: LogAttribute
+  id: 0ed325fb-3d55-3935-0a0a-7f6c0ea15913
+  position: 3155,1238
   inputs:
-  - source: 1eea08a5-016d-1000-1320-25058c581f4e
-    fromPort: Funnel
-  - source: bbfb226b-016c-1000-8d5e-95d3c69114da
-    relationships:
+  - source: bbfb5e15-016c-1000-24e9-c7827e34b838
+    from:
+    - Output1
+  - source: 92136135-3d3f-33bd-739f-74b2d994e73e
+    from:
+    - Funnel
+  - source: 5469f8d8-a039-38e6-a49c-edfef4c0bc7c
+    from:
     - set state fail
     - success
     properties:
@@ -112,25 +113,33 @@ components:
       - org.apache.nifi.prioritizer.OldestFlowFileFirstPrioritizer
       - org.apache.nifi.prioritizer.PriorityAttributePrioritizer
     position:
-    - 1801,365
-    - 2061,459
-  - source: bbfb5e15-016c-1000-24e9-c7827e34b838
-    fromPort: Output1
+    - 3065,922
+    - 3325,1017
+
+- name: RemoteLogAttribute
+  type: LogAttribute
+  id: 78e2ba79-a996-3df8-ce69-3c4aab72c1c0
+  position: 3092,1668
+  inputs:
+  - source: d8323ec6-bbe8-3f22-5bd0-2df7f8d6dd2b
+    from:
+    - Remote out
 
 - type: FUNNEL
-  id: 1eea08a5-016d-1000-1320-25058c581f4e
-  position: 1643,600
+  id: 92136135-3d3f-33bd-739f-74b2d994e73e
+  position: 2906,1158
   inputs:
-  - source: bbfb226b-016c-1000-8d5e-95d3c69114da
-    relationships:
+  - source: 5469f8d8-a039-38e6-a49c-edfef4c0bc7c
+    from:
     - set state fail
     - success
   - source: bbfb5e15-016c-1000-24e9-c7827e34b838
-    fromPort: Output2
+    from:
+    - Output2
 
 - type: LABEL
-  id: a36c5dd4-016d-1000-807e-8e005804985e
-  position: 638,590
+  id: dc64abc3-244f-32d9-ec0f-a3e16f119540
+  position: 1901,1147
   comment: |
     Test label
   styles:
@@ -141,24 +150,25 @@ components:
   type: PROCESS_GROUP
   id: bbfb5e15-016c-1000-24e9-c7827e34b838
   template: bbfb5e15-016c-1000-24e9-c7827e34b838.yaml
-  position: 1152,744
+  position: 2416,1301
   comment: dsfgsdfg
   inputs:
-  - source: bbfb226b-016c-1000-8d5e-95d3c69114da
-    relationships:
+  - source: 5469f8d8-a039-38e6-a49c-edfef4c0bc7c
+    from:
     - success
-    toPort: Input1
+    to: Input1
     position:
-    - 772,800
+    - 2036,1358
 
 - name: NiFi Flow
   type: REMOTE_PROCESS_GROUP
-  id: a39044b5-016d-1000-6c5b-8ff48923c699
-  position: 1142,1078
+  id: d8323ec6-bbe8-3f22-5bd0-2df7f8d6dd2b
+  position: 2406,1635
   properties:
     protocol: HTTP
     targetUris: http://localhost:8080/nifi
   inputs:
   - source: bbfb5e15-016c-1000-24e9-c7827e34b838
-    fromPort: Output1
-    toPort: Remote Input
+    from:
+    - Output1
+    to: Remote Input

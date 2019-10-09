@@ -12,37 +12,37 @@ dependencies:
 components:
 - name: Input1
   type: INPUT_PORT
-  id: bbfc61f0-016c-1000-1e32-2043a1243e58
+  id: b0075011-44cd-374c-b74a-c893d7ff1def
   position: 583,540
-
-- name: Output1
-  type: OUTPUT_PORT
-  id: bbff2dfb-016c-1000-40ba-cee0f076c9b4
-  position: 1520,235
-  inputs:
-  - source: bbff5113-016c-1000-f578-4ebd3634b71b
-    relationships:
-    - success
 
 - name: Output2
   type: OUTPUT_PORT
-  id: bbfc7679-016c-1000-633e-f242a224a77b
+  id: 2155a50b-d184-3dc9-416f-5bd4b4584457
   position: 1818,540
   inputs:
-  - source: bbfeef69-016c-1000-4e26-e28df39b98da
-    relationships:
+  - source: 6a641059-9bf5-3215-8203-01bb24739098
+    from:
     - success
 
-- name: LogAttribute Inside
-  type: LogAttribute
-  id: bbff5113-016c-1000-f578-4ebd3634b71b
-  position: 528,195
+- name: Output1
+  type: OUTPUT_PORT
+  id: 3e09d75a-e5ea-32f4-4d03-8d647921edf0
+  position: 1520,235
   inputs:
-  - source: bbfc61f0-016c-1000-1e32-2043a1243e58
+  - source: 8355cde7-a187-3561-0c21-bc4e39f97314
+    from:
+    - success
 
 - name: UpdateAttribute Inside
   type: UpdateAttribute
-  id: bbfeef69-016c-1000-4e26-e28df39b98da
+  id: 6a641059-9bf5-3215-8203-01bb24739098
   position: 1147,502
   inputs:
-  - source: bbfc61f0-016c-1000-1e32-2043a1243e58
+  - source: b0075011-44cd-374c-b74a-c893d7ff1def
+
+- name: LogAttribute Inside
+  type: LogAttribute
+  id: 8355cde7-a187-3561-0c21-bc4e39f97314
+  position: 528,195
+  inputs:
+  - source: b0075011-44cd-374c-b74a-c893d7ff1def

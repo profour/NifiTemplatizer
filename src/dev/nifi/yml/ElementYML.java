@@ -15,7 +15,6 @@ import org.apache.nifi.api.toolkit.model.ProcessGroupEntity;
 import org.apache.nifi.api.toolkit.model.ProcessorConfigDTO;
 import org.apache.nifi.api.toolkit.model.ProcessorEntity;
 import org.apache.nifi.api.toolkit.model.PropertyDescriptorDTO;
-import org.apache.nifi.api.toolkit.model.RemoteProcessGroupContentsDTO;
 import org.apache.nifi.api.toolkit.model.RemoteProcessGroupDTO;
 import org.apache.nifi.api.toolkit.model.RemoteProcessGroupEntity;
 
@@ -162,35 +161,35 @@ public class ElementYML {
 		
 		// Remote Hosts hosting the RemoteProcessGroup
 		if (config.getTargetUris() != null && !config.getTargetUris().isEmpty()) {
-			this.properties.put("targetUris", config.getTargetUris());
+			this.properties.put(HelperYML.TARGET_URIS, config.getTargetUris());
 		}
 		
 		// Proxy settings
 		if (config.getProxyHost() != null && !config.getProxyHost().isEmpty()) {
-			this.properties.put("proxyHost", config.getProxyHost());
+			this.properties.put(HelperYML.PROXY_HOST, config.getProxyHost());
 		}
 		if (config.getProxyPort() != null) {
-			this.properties.put("proxyPort", config.getProxyPort().toString());
+			this.properties.put(HelperYML.PROXY_PORT, config.getProxyPort().toString());
 		}
 		if (config.getProxyUser() != null && !config.getProxyUser().isEmpty()) {
-			this.properties.put("proxyUser", config.getProxyUser());
+			this.properties.put(HelperYML.PROXY_USER, config.getProxyUser());
 		}
 		if (config.getProxyPassword() != null && !config.getProxyPassword().isEmpty()) {
-			this.properties.put("proxyPassword", config.getProxyPassword());
+			this.properties.put(HelperYML.PROXY_PASSWORD, config.getProxyPassword());
 		}
 		
 		// General Network settings
 		if (config.getLocalNetworkInterface() != null && !config.getLocalNetworkInterface().isEmpty()) {
-			this.properties.put("network", config.getLocalNetworkInterface());
+			this.properties.put(HelperYML.NETWORK, config.getLocalNetworkInterface());
 		}
 		if (!HelperYML.DEFAULT_REMOTE_TRANSPORT.equals(config.getTransportProtocol())) {
-			this.properties.put("protocol", config.getTransportProtocol());
+			this.properties.put(HelperYML.PROTOCOL, config.getTransportProtocol());
 		}
 		if (!HelperYML.DEFAULT_REMOTE_TIMEOUT.equals(config.getCommunicationsTimeout())) {
-			this.properties.put("timeout", config.getCommunicationsTimeout());
+			this.properties.put(HelperYML.TIMEOUT, config.getCommunicationsTimeout());
 		}
 		if (!HelperYML.DEFAULT_REMOTE_YIELD.equals(config.getYieldDuration())) {
-			this.properties.put("yieldDuration", config.getYieldDuration());
+			this.properties.put(HelperYML.YIELD_DURATION, config.getYieldDuration());
 		}
 		
 		// TODO: It is possible to configure settings on the remote ports of a RemoteProcessGroup
@@ -230,8 +229,8 @@ public class ElementYML {
 		this.styles = new TreeMap<String, String>();
 
 		// Coerce width/height into the styles bucket
-		this.styles.put(HelperYML.WIDTH, String.format("%.0f", l.getComponent().getWidth()));
-		this.styles.put(HelperYML.HEIGHT, String.format("%.0f", l.getComponent().getHeight()));
+		this.styles.put(HelperYML.WIDTH, HelperYML.formatDoubleTruncated(l.getComponent().getWidth()));
+		this.styles.put(HelperYML.HEIGHT, HelperYML.formatDoubleTruncated(l.getComponent().getHeight()));
 
 		handleStyles(l.getComponent().getStyle());
 	}
@@ -311,7 +310,7 @@ public class ElementYML {
 	 */
 	private void handlePosition(PositionDTO position) {
 		// Truncate position down to integer values
-		this.position = String.format("%.0f,%.0f", position.getX(), position.getY());
+		this.position = HelperYML.formatPosition(position.getX(), position.getY());
 	}
 
 	/*
