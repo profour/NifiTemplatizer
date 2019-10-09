@@ -39,6 +39,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import dev.nifi.utils.DependencyBuilder;
 import dev.nifi.yml.ControllerYML;
 import dev.nifi.yml.ElementYML;
+import dev.nifi.yml.HelperYML;
 import dev.nifi.yml.TemplateYML;
 
 
@@ -190,7 +191,7 @@ public class ExportCommand extends BaseCommand {
 			yaml = yaml.replace("\ncomponents:", "\n\ncomponents:");
 			yaml = yaml.replace("\ncomponents:\n", "\ncomponents:");
 			
-			try (FileWriter writer = new FileWriter(outputDir + File.separator + template.name + ".yaml")) {
+			try (FileWriter writer = new FileWriter(outputDir + File.separator + template.name + HelperYML.YAML_EXT)) {
 				writer.write(yaml);
 			}
 		}

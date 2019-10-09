@@ -13,10 +13,11 @@ import org.apache.nifi.api.toolkit.model.ProcessorEntity;
 
 public class DependencyBuilder {
 
-
+	// Lookups of canonical name to Bundles/Types
 	private Map<String, BundleDTO> bundles = new HashMap<String, BundleDTO>();
 	private Map<String, String> types = new HashMap<String, String>();
 	
+	// Quick lookup of Processor ID -> canonical dependency name
 	private Map<String, String> idToProcessorName = new HashMap<String, String>();
 	
 	

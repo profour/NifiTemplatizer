@@ -12,8 +12,14 @@ public class HelperYML {
 		PROCESS_GROUP, 
 		REMOTE_PROCESS_GROUP,
 		FUNNEL, 
-		LABEL
+		LABEL;
+		
+		public boolean isType(String type) {
+			return name().equalsIgnoreCase(type);
+		}
 	}
+	
+	public static String YAML_EXT = ".yaml";
 	
 	// font-size
 	public static String DEFAULT_STYLE_FONT_SIZE = "12px";
