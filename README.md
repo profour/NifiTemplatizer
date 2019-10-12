@@ -2,7 +2,7 @@
 The purpose of this project is to create exports of NiFi workspaces that are easier for humans to read and modify. As an added bonus, the exported yaml files are also easier to track and version in version control systems (such as git). Diffs between versions of the exports are much easier to understand when compared to the normal XML template exports from NiFi, allowing for standard code review processes to be applied to NiFi workspace changes.
 
 # Commands:
-* Import (20% complete)
+* Import (60% complete)
   - Generic
     - Position
   - Controllers
@@ -12,6 +12,8 @@ The purpose of this project is to create exports of NiFi workspaces that are eas
   - Process Groups
   - Remote Process Groups
   - Labels
+  - Links (90%)
+    - TODO: Links to/from RemoteProcessGroups
 * Export (95% complete)
   - Generic
     - Styles (Color/Fonts)
@@ -36,8 +38,10 @@ The purpose of this project is to create exports of NiFi workspaces that are eas
   - Labels
     - Width/Height
     - Text content
-* Clean (0% complete)
-  - TODO: Remove all content from workspace (clean slate)
+* Clean (100% complete)
+  - Remove all content from workspace (clean slate)
+* Set State (100% complete)
+  - Enable or disable all processors in a workspace
 * Permissions (0% complete)
   - TODO: Give all permissions to specified user
 
