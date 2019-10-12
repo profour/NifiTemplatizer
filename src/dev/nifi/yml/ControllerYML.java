@@ -45,5 +45,12 @@ public class ControllerYML {
 			}
 		}
 	}
+	
+	public String getType() {
+		if (this.type == null) {
+			return this.name;
+		}
+		return this.type;
+	}
 
 }

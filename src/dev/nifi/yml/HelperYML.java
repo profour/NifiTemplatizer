@@ -83,4 +83,14 @@ public class HelperYML {
 	public static String formatPosition(Double x, Double y) {
 		return String.format("%.0f,%.0f", x, y);
 	}
+	
+	public static boolean isProcessGroup(String type) {
+		return HelperYML.ReservedComponents.PROCESS_GROUP.isType(type) || 
+			   HelperYML.ReservedComponents.REMOTE_PROCESS_GROUP.isType(type);
+	}
+	
+	public static boolean isPort(String type) {
+		return HelperYML.ReservedComponents.INPUT_PORT.isType(type) ||
+			   HelperYML.ReservedComponents.OUTPUT_PORT.isType(type);
+	}
 }
