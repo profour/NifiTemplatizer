@@ -1,7 +1,5 @@
 package dev.nifi.commands;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,11 +28,6 @@ import org.apache.nifi.api.toolkit.model.ProcessorEntity;
 import org.apache.nifi.api.toolkit.model.ProcessorsEntity;
 import org.apache.nifi.api.toolkit.model.RemoteProcessGroupEntity;
 import org.apache.nifi.api.toolkit.model.RemoteProcessGroupsEntity;
-
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 
 import dev.nifi.utils.DependencyBuilder;
 import dev.nifi.yml.ControllerYML;
@@ -73,7 +66,7 @@ public class ExportCommand extends BaseCommand {
 			
 			// TODO: Look for structural duplicates in the templates and attempt to extract a common (parameterized) version
 			
-			export(templates);
+			HelperYML.export(this.outputDir, templates);
 		} catch (ApiException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -170,31 +163,6 @@ public class ExportCommand extends BaseCommand {
 		}
 		
 		return rootPG;
-	}
-	
-	private void export(List<TemplateYML> templates) throws IOException {
-		YAMLFactory f = new YAMLFactory();
-		f.enable(YAMLGenerator.Feature.MINIMIZE_QUOTES);
-		f.disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER);
-		ObjectMapper mapper = new ObjectMapper(f);
-		
-		mapper.setSerializationInclusion(Include.NON_EMPTY);
-		
-		for (TemplateYML template : templates) {
-			String yaml = mapper.writer().writeValueAsString(template);
-			
-			// Formatting to make it easier to read the templates
-			yaml = yaml.replaceAll("\n-", "\n\n-");
-			yaml = yaml.replace("\ndependencies:", "\n\ndependencies:");
-			yaml = yaml.replace("\ncontrollers:", "\n\ncontrollers:");
-			yaml = yaml.replace("\ncontrollers:\n", "\ncontrollers:");
-			yaml = yaml.replace("\ncomponents:", "\n\ncomponents:");
-			yaml = yaml.replace("\ncomponents:\n", "\ncomponents:");
-			
-			try (FileWriter writer = new FileWriter(outputDir + File.separator + template.name + HelperYML.YAML_EXT)) {
-				writer.write(yaml);
-			}
-		}
 	}
 	
 	public static void main(String[] args) {

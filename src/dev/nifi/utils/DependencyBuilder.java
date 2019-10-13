@@ -104,6 +104,39 @@ public class DependencyBuilder {
 		return this;
 	}
 	
+	/**
+	 * Convert Nested Map form to an easier form to use when using the NiFiApi
+	 * @param dependencies
+	 * @return
+	 */
+	public static Map<String, Pair<String, BundleDTO>> createDependencyLookup(
+			Map<String, Map<String, Map<String, Map<String, String>>>> dependencies) {
+		Map<String, Pair<String, BundleDTO>> lookup = new HashMap<>();
+		
+		for (String group : dependencies.keySet()) {
+			Map<String, Map<String, Map<String, String>>> artifacts = dependencies.get(group);
+			for (String artifact : artifacts.keySet()) {
+				 Map<String, Map<String, String>> versions = artifacts.get(artifact);
+				 
+				 for (String version : versions.keySet()) {
+					 Map<String, String> classes = versions.get(version);
+					 
+					 BundleDTO bundle = new BundleDTO();
+					 bundle.setGroup(group);
+					 bundle.setArtifact(artifact);
+					 bundle.setVersion(version);
+					 
+					 for (String canonicalName : classes.keySet()) {
+						 String fullType = classes.get(canonicalName);
+						 
+						 lookup.put(canonicalName, new Pair<String, BundleDTO>(fullType, bundle));
+					 }
+				 }
+			}
+		}
+		
+		return lookup;
+	}
 	
 	private String processDependency(String type, BundleDTO bundle) {
 

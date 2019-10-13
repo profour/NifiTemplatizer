@@ -1,8 +1,21 @@
 package dev.nifi.yml;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.nifi.api.toolkit.model.PositionDTO;
 import org.apache.nifi.api.toolkit.model.ConnectionDTO.LoadBalanceCompressionEnum;
 import org.apache.nifi.api.toolkit.model.ConnectionDTO.LoadBalanceStrategyEnum;
+
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 
 public class HelperYML {
 	// Enumeration of statically available types for elements on the workspace
@@ -92,5 +105,51 @@ public class HelperYML {
 	public static boolean isPort(String type) {
 		return HelperYML.ReservedComponents.INPUT_PORT.isType(type) ||
 			   HelperYML.ReservedComponents.OUTPUT_PORT.isType(type);
+	}
+	
+
+	
+	public static List<TemplateYML> load(final String importDir) throws JsonParseException, JsonMappingException, IOException {
+		List<TemplateYML> templates = new ArrayList<TemplateYML>();
+		
+		YAMLFactory f = new YAMLFactory();
+		ObjectMapper mapper = new ObjectMapper(f);
+		
+		File templateDir = new File(importDir);
+		
+		for (String templateName : templateDir.list()) {
+			if (templateName.endsWith(HelperYML.YAML_EXT)) {
+				File template = new File(templateDir.getAbsolutePath() + File.separator + templateName);
+				TemplateYML yml = mapper.readValue(template, TemplateYML.class);
+				templates.add(yml);
+			}
+		}
+		
+		return templates;
+	}
+	
+	public static void export(String outputDir, List<TemplateYML> templates) throws IOException {
+		YAMLFactory f = new YAMLFactory();
+		f.enable(YAMLGenerator.Feature.MINIMIZE_QUOTES);
+		f.disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER);
+		ObjectMapper mapper = new ObjectMapper(f);
+		
+		mapper.setSerializationInclusion(Include.NON_EMPTY);
+		
+		for (TemplateYML template : templates) {
+			String yaml = mapper.writer().writeValueAsString(template);
+			
+			// Formatting to make it easier to read the templates
+			yaml = yaml.replaceAll("\n-", "\n\n-");
+			yaml = yaml.replace("\ndependencies:", "\n\ndependencies:");
+			yaml = yaml.replace("\ncontrollers:", "\n\ncontrollers:");
+			yaml = yaml.replace("\ncontrollers:\n", "\ncontrollers:");
+			yaml = yaml.replace("\ncomponents:", "\n\ncomponents:");
+			yaml = yaml.replace("\ncomponents:\n", "\ncomponents:");
+			
+			try (FileWriter writer = new FileWriter(outputDir + File.separator + template.name + HelperYML.YAML_EXT)) {
+				writer.write(yaml);
+			}
+		}
 	}
 }

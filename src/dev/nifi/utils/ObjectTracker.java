@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import dev.nifi.yml.HelperYML.ReservedComponents;
+
 public class ObjectTracker {
 
 	// GroupId -> Name -> TrackedObjects
@@ -16,6 +18,10 @@ public class ObjectTracker {
 	
 	public String lookupByOldId(String oldId) {
 		return idMapping.get(oldId);
+	}
+	
+	public String getIdForObject(String groupId, String name, ReservedComponents type) {
+		return getIdForObject(groupId, name, type.name());
 	}
 	
 	public String getIdForObject(String groupId, String name, String type) {
