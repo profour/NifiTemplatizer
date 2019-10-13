@@ -1,24 +1,29 @@
 # NifiTemplatizer
-The purpose of this project is to create exports of NiFi workspaces that are easier for humans to read and modify. As an added bonus, the exported yaml files are also easier to track and version in version control systems (such as git). Diffs between versions of the exports are much easier to understand when compared to the normal XML template exports from NiFi, allowing for standard code review processes to be applied to NiFi workspace changes.
+The purpose of this project is to create exports of NiFi workspaces that are easier for developers to read and modify. With that purpose in mind, a simplified YAML format was generated to concisely express the content in the NiFi workspace. As an added bonus, the simplified YAML format also makes it easier to perform standard actions (diffs/merges/etc) in version control systems to track changes over time to the NiFi workspace.
 
 # Commands:
 * Import (60% complete)
   - Generic
     - Position
+    - Styles (Colors/Fonts)
   - Controllers
   - Processors
+    - Properties
+    - TODO: Advanced rules
   - Ports (Input/Output)
   - Funnels
   - Process Groups
   - Remote Process Groups
   - Labels
-  - Links (90%)
+    - Comments
+    - Styles
+  - Connectivity (Inputs/Outputs/Relationships) (90%)
+    - TODO: Queueing properties
     - TODO: Links to/from RemoteProcessGroups
 * Export (95% complete)
   - Generic
     - Styles (Color/Fonts)
     - Position
-    - Connectivity (Inputs/Outputs/Relationships)
   - Dependency Tree
     - Extract all dependencies of workspace
     - Canonical name generation for dependencies
@@ -38,6 +43,8 @@ The purpose of this project is to create exports of NiFi workspaces that are eas
   - Labels
     - Width/Height
     - Text content
+  - Connectivity (Inputs/Outputs/Relationships)
+    - Queue Properties
 * Clean (100% complete)
   - Remove all content from workspace (clean slate)
 * Set State (100% complete)
