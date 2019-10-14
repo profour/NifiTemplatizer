@@ -34,7 +34,10 @@ The purpose of this project is to create exports of NiFi workspaces that are eas
     - [ ] Yield Duration
     - [ ] Connection Properties:
       - Proxy Host, Proxy Port, Proxy User, Proxy Password
-      - Communications timeout, Transport Protocol, Local Network Interface
+      - Communications timeout, Transport Protocol, Local Network Interface, yieldDuration
+    - [ ] Remote Port Settings:
+      - maxConcurrentTasks, useCompression
+      - batchCount, batchSize, batchDuration
   - [x] Labels
     - [x] Comment
     - [x] Styles (Colors/Fonts)
@@ -42,8 +45,8 @@ The purpose of this project is to create exports of NiFi workspaces that are eas
   - [ ] Connectivity (Inputs/Outputs/Relationships) (90%)
     - [x] Name
     - [ ] Queueing properties
-      - FlowFileExpiration, BackPressureObjectThreshold, BackPressureDataSizeThreshold, Prioritizers
-      - Load balance strategy, load balance compression
+      - flowFileExpiration, backPressureObjectThreshold, backPressureDataSizeThreshold, prioritizers
+      - loadBalanceStrategy, loadBalancePartition, loadBalanceCompression
     - [ ] Link bends (aesthetic)
     - [ ] Label Index?
     - [ ] Z index
@@ -64,9 +67,9 @@ The purpose of this project is to create exports of NiFi workspaces that are eas
     - [x] Styles (Colors/Fonts)
     - [x] Properties
     - [x] Annotation Data (advanced rules)
-    - [ ] Scheduling 
+    - [x] Scheduling 
       - (schedulingStrategy, schedulingPeriod, maxTasks, penaltyDuration, yieldDuration, runDuration, executionNode)
-    - [ ] Bulletin Level
+    - [x] Bulletin Level
     - [ ] Terminated relationships (may just be implied)
     - [x] Comments
   - [x] Ports (Input/Output)
@@ -81,22 +84,24 @@ The purpose of this project is to create exports of NiFi workspaces that are eas
     - [x] TargetUris
     - [x] Name
     - [x] Comments
-    - [ ] Yield Duration
-    - [ ] Connection Properties:
+    - [x] Connection Properties:
       - Proxy Host, Proxy Port, Proxy User, Proxy Password
-      - Communications timeout, Transport Protocol, Local Network Interface
+      - Communications timeout, Transport Protocol, Local Network Interface, yieldDuration
+    - [ ] Remote Port Settings:
+      - maxConcurrentTasks, useCompression
+      - batchCount, batchSize, batchDuration
   - [x] Labels
     - [x] Comment
     - [x] Styles (Colors/Fonts)
     - [x] Width/Height
   - [ ] Connectivity (Inputs/Outputs/Relationships) (90%)
     - [x] Name
-    - [ ] Queueing properties
-      - FlowFileExpiration, BackPressureObjectThreshold, BackPressureDataSizeThreshold, Prioritizers
-      - Load balance strategy, load balance compression
+    - [x] Queueing properties
+      - flowFileExpiration, backPressureObjectThreshold, backPressureDataSizeThreshold, prioritizers
+      - loadBalanceStrategy, loadBalancePartition, loadBalanceCompression
     - [x] Link bends (aesthetic)
-    - [ ] Label Index?
-    - [ ] Z index
+    - [x] Label Index?
+    - [x] Z index
 * Clean (100% complete)
   - Remove all content from workspace (clean slate)
 * Set State (100% complete)
