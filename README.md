@@ -76,7 +76,7 @@ The purpose of this project is to create exports of NiFi workspaces that are eas
   - [ ] Process Groups
     - [x] Name
     - [x] Comments
-    - [ ] TODO: De-duplicate structurally similar templates (extract variables for varying properties)
+    - [ ] De-duplicate structurally similar templates (extract variables for varying properties)
   - [ ] Remote Process Groups
     - [x] TargetUris
     - [x] Name
@@ -102,7 +102,7 @@ The purpose of this project is to create exports of NiFi workspaces that are eas
 * Set State (100% complete)
   - Enable or disable all processors in a workspace
 * Permissions (0% complete)
-  - TODO: Give all permissions to specified user
+  - [ ] Give all permissions to specified user
 
 # Example
 Test workspace to cover lots of commonly used features in NiFi. The exported YAML is roughly 1/10th the size of the XML template export.
