@@ -60,22 +60,22 @@ public class ElementYML {
 	/**
 	 * Only store the list of properties that are different from default
 	 */
-	public Map<String, String> properties;
+	public final Map<String, String> properties = new TreeMap<>();
 
 	/**
 	 * Only store the aesthetic properties that are different from default
 	 */
-	public Map<String, String> styles;
+	public final Map<String, String> styles = new TreeMap<>();
 
 	/**
 	 * Scheduling details for this Processor
 	 */
-	public Map<String, String> scheduling;
+	public final Map<String, String> scheduling = new TreeMap<>();
 
 	/**
 	 * All incoming connections to this Processor
 	 */
-	public List<InputConnectionYML> inputs;
+	public final List<InputConnectionYML> inputs = new ArrayList<>();
 
 	/**
 	 * Advanced rules based on triggers that conditionally generate attributes
@@ -124,7 +124,42 @@ public class ElementYML {
 		this.comment = config.getComments();
 
 		// Extract Scheduling details that may have changed for this processor
-		// TODO:
+		String schedulingPeriod = config.getSchedulingPeriod(); // 0 Sec
+		String schedulingStrategy = config.getSchedulingStrategy(); // TIMER_DRIVEN
+		Integer maxTaskCount = config.getConcurrentlySchedulableTaskCount(); // 1
+		String penaltyDuration = config.getPenaltyDuration(); // 30 sec
+		String yieldDuration = config.getYieldDuration(); // 1 sec
+		Long runDuration = config.getRunDurationMillis(); // 0
+		String node = config.getExecutionNode(); // ALL
+		String level = config.getBulletinLevel(); // WARN
+		
+		if (schedulingPeriod != null && !HelperYML.DEFAULT_SCHEDULING_PERIOD.equals(schedulingPeriod)) {
+			this.scheduling.put(HelperYML.SCHEDULING_PERIOD, schedulingPeriod);
+		}
+		if (schedulingStrategy != null && !HelperYML.DEFAULT_SCHEDULING_STRATEGY.equals(schedulingStrategy)) {
+			this.scheduling.put(HelperYML.SCHEDULING_STRATEGY, schedulingStrategy);
+		}
+		if (maxTaskCount != null && HelperYML.DEFAULT_SCHEDULABLE_TASK_COUNT != maxTaskCount) {
+			this.scheduling.put(HelperYML.SCHEDULABLE_TASK_COUNT, maxTaskCount.toString());
+		}
+		if (penaltyDuration != null && !HelperYML.DEFAULT_PENALTY_DURATION.equals(penaltyDuration)) {
+			this.scheduling.put(HelperYML.PENALTY_DURATION, penaltyDuration);
+		}
+		if (yieldDuration != null && !HelperYML.DEFAULT_YIELD_DURATION.equals(yieldDuration)) {
+			this.scheduling.put(HelperYML.YIELD_DURATION, yieldDuration);
+		}
+		if (runDuration != null && HelperYML.DEFAULT_RUN_DURATION != runDuration) {
+			this.scheduling.put(HelperYML.RUN_DURATION, runDuration.toString());
+		}
+		if (node != null && !HelperYML.DEFAULT_EXECUTION_NODE.equals(node)) {
+			this.scheduling.put(HelperYML.EXECUTION_NODE, node);
+		}
+		if (level != null && !HelperYML.DEFAULT_BULLETIN_LEVEL.equals(level)) {
+			this.scheduling.put(HelperYML.BULLETIN_LEVEL, level);
+		}
+		
+		// TODO: May want to explicitly mention terminated relationships (rather than implicit from use/disuse)
+		// config.getAutoTerminatedRelationships();
 	}
 
 	/**
@@ -156,8 +191,6 @@ public class ElementYML {
 		
 		RemoteProcessGroupDTO config = rpg.getComponent();
 		this.comment = config.getComments();
-
-		this.properties = new TreeMap<>();
 		
 		// Remote Hosts hosting the RemoteProcessGroup
 		if (config.getTargetUris() != null && !config.getTargetUris().isEmpty()) {
@@ -204,6 +237,8 @@ public class ElementYML {
 	 */
 	public ElementYML(PortEntity port, List<ConnectionEntity> inputs) {
 		this(port.getId(), port.getComponent().getName(), port.getPortType(), port.getPosition(), inputs);
+		
+		this.comment = port.getComponent().getComments();
 	}
 
 	/**
@@ -226,8 +261,6 @@ public class ElementYML {
 
 		this.comment = l.getComponent().getLabel();
 
-		this.styles = new TreeMap<String, String>();
-
 		// Coerce width/height into the styles bucket
 		this.styles.put(HelperYML.WIDTH, HelperYML.formatDoubleTruncated(l.getComponent().getWidth()));
 		this.styles.put(HelperYML.HEIGHT, HelperYML.formatDoubleTruncated(l.getComponent().getHeight()));
@@ -245,7 +278,6 @@ public class ElementYML {
 	 */
 	private void handleProperties(Map<String, PropertyDescriptorDTO> defaultProperties,
 			Map<String, String> configuredValues) {
-		this.properties = new TreeMap<String, String>();
 
 		// Populate the list of properties that have changed (compare default value vs
 		// configured value)
@@ -263,9 +295,6 @@ public class ElementYML {
 	}
 
 	private void handleStyles(Map<String, String> styles) {
-		if (this.styles == null) {
-			this.styles = new TreeMap<>();
-		}
 
 		// Look at all styles and check if any are non-default values
 		for (String key : styles.keySet()) {
@@ -297,8 +326,6 @@ public class ElementYML {
 	private void handleConnections(List<ConnectionEntity> inputs) {
 		if (inputs != null) {
 			// Process incoming connections to fill out the input listing
-			this.inputs = new ArrayList<>();
-
 			for (ConnectionEntity connection : inputs) {
 				this.inputs.add(new InputConnectionYML(connection));
 			}

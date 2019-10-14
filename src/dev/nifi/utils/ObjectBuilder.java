@@ -220,6 +220,17 @@ public class ObjectBuilder {
 		dto.setLabel(ele.comment);
 		
 		dto.setVersionedComponentId(ele.id);
+
+		if (ele.styles != null) {
+			if (ele.styles.containsKey(HelperYML.WIDTH)) {
+				dto.setWidth(Double.parseDouble(ele.styles.get(HelperYML.WIDTH)));
+			}
+			if (ele.styles.containsKey(HelperYML.HEIGHT)) {
+				dto.setHeight(Double.parseDouble(ele.styles.get(HelperYML.HEIGHT)));
+				
+			}
+			dto.setStyle(ele.styles);
+		}
 		
 		LabelEntity response = processGroupAPI.createLabel(getProcessGroupId(), label);
 		

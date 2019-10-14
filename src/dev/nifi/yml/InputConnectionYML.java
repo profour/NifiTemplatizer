@@ -90,6 +90,12 @@ public class InputConnectionYML {
 		if (conn.getName() != null && !conn.getName().isEmpty()) {
 			this.properties.put(HelperYML.NAME, conn.getName());
 		}
+		if (conn.getGetzIndex() != null) {
+			this.properties.put(HelperYML.Z_INDEX, conn.getGetzIndex());
+		}
+		if (conn.getLabelIndex() != null && conn.getLabelIndex() != 1) {
+			this.properties.put(HelperYML.LABEL_INDEX, conn.getLabelIndex());
+		}
 		if (conn.getBackPressureObjectThreshold() != HelperYML.DEFAULT_BACK_PRESSURE_OBJECT_THRESHOLD) {
 			this.properties.put(HelperYML.BACK_PRESSURE_OBJECT_THRESHOLD, conn.getBackPressureObjectThreshold().toString());
 		}
@@ -105,7 +111,8 @@ public class InputConnectionYML {
 		if (conn.getLoadBalanceCompression() != HelperYML.DEFAULT_LOAD_BALANCE_COMPRESSION) {
 			this.properties.put(HelperYML.LOAD_BALANCE_COMPRESSION, conn.getLoadBalanceCompression().name());
 		}
-		if (!conn.getFlowFileExpiration().equals(HelperYML.DEFAULT_FLOW_FILE_EXPIRATION)) {
+		if (!conn.getFlowFileExpiration().equals(HelperYML.DEFAULT_FLOW_FILE_EXPIRATION_SEC) &&
+			!conn.getFlowFileExpiration().equals(HelperYML.DEFAULT_FLOW_FILE_EXPIRATION_MINS)) {
 			this.properties.put(HelperYML.FLOW_FILE_EXPIRATION, conn.getFlowFileExpiration());
 		}
 		if (!conn.getPrioritizers().isEmpty()) {

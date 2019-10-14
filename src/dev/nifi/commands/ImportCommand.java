@@ -8,6 +8,7 @@ import java.util.Map;
 import org.apache.nifi.api.toolkit.ApiException;
 import org.apache.nifi.api.toolkit.api.ProcessGroupsApi;
 import org.apache.nifi.api.toolkit.model.BundleDTO;
+import org.apache.nifi.api.toolkit.model.PositionDTO;
 import org.apache.nifi.api.toolkit.model.ProcessGroupEntity;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -101,12 +102,41 @@ public class ImportCommand extends BaseCommand {
 			
 			// Linkage must run after create elements to ensure all src/dst pairs can be satisfied
 			createLinkage(template);
+			
+			// Create a label on the canvas to store useful data for NiFi Templatizer to store state
+			createMetadataLabel(template);
 		} finally {
 			builder.leaveProcessGroup();
 		}
 		
 	}
 	
+	private void createMetadataLabel(TemplateYML template) throws ApiException {
+		PositionDTO position = new PositionDTO();
+		position.setX(Double.MIN_VALUE);
+		position.setY(Double.MIN_VALUE);
+		
+		for (ElementYML element : template.components) {
+			if (element.position != null) {
+				PositionDTO pos = HelperYML.createPosition(element.position);
+				
+				position.setX(Math.max(position.getX(), pos.getX()));
+				position.setY(Math.max(position.getY(), pos.getY()));
+			}
+		}
+		position.setX(position.getX() + 500.0);
+		position.setY(position.getY() + 500.0);
+		
+		ElementYML metadataLabel = new ElementYML();
+		metadataLabel.comment = "Imported By NiFi Templatizer\n\nasdf\nsdfjkl\nwkerjl\nkewflkjwle\n";
+		metadataLabel.position = HelperYML.formatPosition(position.getX(), position.getY());
+		metadataLabel.styles.put(HelperYML.WIDTH, HelperYML.formatDoubleTruncated(175.0));
+		metadataLabel.styles.put(HelperYML.HEIGHT, HelperYML.formatDoubleTruncated(20.0));
+		metadataLabel.styles.put(HelperYML.BG_COLOR, "#465ff0");
+		
+		builder.makeLabel(metadataLabel);
+	}
+
 	private void createProcessGroups(TemplateYML template, Map<String, TemplateYML> templateDB) throws ApiException {
 		
 		for (ElementYML ele : template.components) {
@@ -147,10 +177,11 @@ public class ImportCommand extends BaseCommand {
 		for (ElementYML ele : template.components) {
 			Pair<String, BundleDTO> dep = builder.lookup(ele.getType());
 			
+			// If we have a non-null dependency, it means it is a processor and not an intrinsic NiFi type
 			if (dep != null) {
 				builder.makeProcessor(ele);
 			} else {
-				ReservedComponents type = HelperYML.ReservedComponents.valueOf(ele.getType());
+				ReservedComponents type = ReservedComponents.valueOf(ele.getType());
 				switch (type) {
 				case FUNNEL:
 				{

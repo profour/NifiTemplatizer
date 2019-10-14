@@ -46,6 +46,26 @@ public class HelperYML {
 	public static final String BG_COLOR = "background-color";
 	public static final String FONT_SIZE = "font-size";
 	
+	// Processor special property names
+	public static final String SCHEDULING_PERIOD = "runSchedule";
+	public static final String SCHEDULING_STRATEGY = "schedulingStrategy";
+	public static final String SCHEDULABLE_TASK_COUNT = "concurrentTasks";
+	public static final String PENALTY_DURATION = "penaltyDuration";
+	public static final String YIELD_DURATION = "yieldDuration";
+	public static final String RUN_DURATION = "runDuration";
+	public static final String EXECUTION_NODE = "execution";
+	public static final String BULLETIN_LEVEL = "bulletinLevel";
+	
+	// Processor Special Property Defaults
+	public static final String DEFAULT_SCHEDULING_PERIOD = "0 sec";
+	public static final String DEFAULT_SCHEDULING_STRATEGY = "TIMER_DRIVEN";
+	public static final int DEFAULT_SCHEDULABLE_TASK_COUNT = 1;
+	public static final String DEFAULT_PENALTY_DURATION = "30 sec";
+	public static final String DEFAULT_YIELD_DURATION = "1 sec";
+	public static final long DEFAULT_RUN_DURATION = 0L;
+	public static final String DEFAULT_EXECUTION_NODE = "ALL";
+	public static final String DEFAULT_BULLETIN_LEVEL = "WARN";
+	
 	// Remote Process Group Defaults
 	public static final String DEFAULT_REMOTE_TRANSPORT = "RAW";
 	public static final String DEFAULT_REMOTE_TIMEOUT = "30 sec";
@@ -53,6 +73,8 @@ public class HelperYML {
 	
 	// Input Connection special property names
 	public static final String NAME = "name";
+	public static final String Z_INDEX = "zIndex";
+	public static final String LABEL_INDEX = "labelIndex";
 	public static final String BACK_PRESSURE_OBJECT_THRESHOLD= "backPressureObjectThreshold";
 	public static final String BACK_PRESSURE_DATA_SIZE_THRESHOLD = "backPressureDataSizeThreshold";
 	public static final String LOAD_BALANCE_STRATEGY = "loadBalanceStrategy";
@@ -62,7 +84,8 @@ public class HelperYML {
 	public static final String PRIORITIZERS = "prioritizers";
 	
 	// Default values for input connection properties
-	public static final String DEFAULT_FLOW_FILE_EXPIRATION = "0 sec";
+	public static final String DEFAULT_FLOW_FILE_EXPIRATION_SEC = "0 sec";
+	public static final String DEFAULT_FLOW_FILE_EXPIRATION_MINS = "0 mins";
 	public static final String DEFAULT_BACK_PRESSURE_DATA_SIZE_THRESHOLD = "1 GB";
 	public static final int DEFAULT_BACK_PRESSURE_OBJECT_THRESHOLD = 10000;
 	public static final LoadBalanceStrategyEnum DEFAULT_LOAD_BALANCE_STRATEGY = LoadBalanceStrategyEnum.DO_NOT_LOAD_BALANCE;
@@ -77,7 +100,8 @@ public class HelperYML {
 	public static final String NETWORK = "network";
 	public static final String PROTOCOL = "protocol";
 	public static final String TIMEOUT = "timeout";
-	public static final String YIELD_DURATION = "yieldDuration";
+	// REPEATED (commented out here for reference purposes)
+	// public static final String YIELD_DURATION = "yieldDuration";
 	
 	public static PositionDTO createPosition(String pos) {
 

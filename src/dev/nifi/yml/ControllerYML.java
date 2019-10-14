@@ -15,6 +15,8 @@ public class ControllerYML {
 	
 	public String id;
 	
+	public String comment;
+	
 	public Map<String, Object> properties;
 	
 	/**
@@ -30,6 +32,8 @@ public class ControllerYML {
 		if (!this.name.equals(dependencyReference)) {
 			this.type = dependencyReference;
 		}
+		
+		this.comment = controller.getComponent().getComments();
 
 		this.properties = new TreeMap<String, Object>();
 		Map<String, PropertyDescriptorDTO> defaultProperties = dto.getDescriptors();
