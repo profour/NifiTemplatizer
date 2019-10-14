@@ -51,7 +51,7 @@ The purpose of this project is to create exports of NiFi workspaces that are eas
     - [ ] Label Index (which bend the label goes on)
     - [ ] Z index
     - [ ] Links to/from RemoteProcessGroups
-* Export (95% complete)
+* Export (100% functionally complete, stretch goals remaining)
   - [x] Generic
     - [x] Position
   - [x] Dependency Tree
@@ -80,14 +80,14 @@ The purpose of this project is to create exports of NiFi workspaces that are eas
     - [x] Name
     - [x] Comments
     - [ ] STRETCH: De-duplicate structurally similar templates (extract variables for varying properties)
-  - [ ] Remote Process Groups
+  - [x] Remote Process Groups
     - [x] TargetUris
     - [x] Name
     - [x] Comments
     - [x] Connection Properties:
       - Proxy Host, Proxy Port, Proxy User, Proxy Password
       - Communications timeout, Transport Protocol, Local Network Interface, yieldDuration
-    - [ ] Remote Port Settings:
+    - [x] Remote Port Settings:
       - maxConcurrentTasks, useCompression
       - batchCount, batchSize, batchDuration
   - [x] Labels
