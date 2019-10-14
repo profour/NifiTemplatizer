@@ -13,12 +13,12 @@ public class RuleYML {
 	/**
 	 * List of conditions that must all evaluate to true in order for a rule to pass
 	 */
-	public List<String> conditions;
+	public List<String> conditions = new ArrayList<String>();
 	
 	/**
 	 * Map of flowfile attribute names to their values
 	 */
-	public Map<String, String> actions;
+	public Map<String, String> actions = new TreeMap<String, String>();
 
 	/**
 	 * Don't use. Only for deserialization.
@@ -26,9 +26,6 @@ public class RuleYML {
 	public RuleYML() {}
 
 	public RuleYML(List<Conditions> conditions, List<Actions> actions) {
-		this.conditions = new ArrayList<String>();
-		this.actions = new TreeMap<String, String>();
-		
 		for (Conditions c : conditions) {
 			this.conditions.add(c.expression);
 		}

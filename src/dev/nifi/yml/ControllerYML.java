@@ -17,7 +17,7 @@ public class ControllerYML {
 	
 	public String comment;
 	
-	public Map<String, Object> properties;
+	public final Map<String, Object> properties = new TreeMap<String, Object>();
 	
 	/**
 	 * Only for deserialization
@@ -35,7 +35,6 @@ public class ControllerYML {
 		
 		this.comment = controller.getComponent().getComments();
 
-		this.properties = new TreeMap<String, Object>();
 		Map<String, PropertyDescriptorDTO> defaultProperties = dto.getDescriptors();
 		Map<String, String> configuredValues = dto.getProperties();
 		for (String propertyName : defaultProperties.keySet()) {

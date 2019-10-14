@@ -22,7 +22,7 @@ public class InputConnectionYML {
 	 * Relationships connecting from the source processor or
 	 *  an output port from the source processor
 	 */
-	public List<String> from = new ArrayList<String>();
+	public final List<String> from = new ArrayList<>();
 
 	/**
 	 * Destination port the input link is connecting to on the ProcessGroup
@@ -33,12 +33,12 @@ public class InputConnectionYML {
 	 * Special properties for the incoming connection (queuing type, queue size,
 	 * etc)
 	 */
-	public Map<String, Object> properties;
+	public final Map<String, Object> properties = new TreeMap<>();;
 
 	/**
 	 * Aesthetic positioning of bends in the connection link between processors
 	 */
-	public List<String> position;
+	public final List<String> position = new ArrayList<String>();
 	
 	/**
 	 * Only for Jackson deserialization
@@ -46,7 +46,6 @@ public class InputConnectionYML {
 	public InputConnectionYML() {}
 
 	public InputConnectionYML(ConnectionEntity connection) {
-		this.properties = new TreeMap<>();
 
 		// If the source is a REMOTE_OUTPUT_PORT, we should reference the (remote) group
 		// id, rather than the regular id
@@ -78,7 +77,6 @@ public class InputConnectionYML {
 
 		// See if any manual position of the link was performed (aesthetic only)
 		if (!conn.getBends().isEmpty()) {
-			this.position = new ArrayList<String>();
 			for (PositionDTO pos : conn.getBends()) {
 				// Truncate positioning of bends to be integer values only
 				this.position.add(HelperYML.formatPosition(pos.getX(), pos.getY()));

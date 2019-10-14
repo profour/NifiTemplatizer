@@ -42,8 +42,6 @@ components:
   position: 3842,1411
   inputs:
   - source: 92136135-3d3f-33bd-d38b-3772a433f9a6
-    from:
-    - Funnel
   - source: 5469f8d8-a039-38e6-821a-68b0ce21a1a9
     from:
     - set state fail
@@ -180,3 +178,13 @@ components:
     from:
     - Output1
     to: Remote Input
+  remotePorts:
+  - name: Remote Input
+    type: INPUT_PORT
+    maxConcurrentTasks: 3
+    useCompression: true
+    batchCount: 12
+    batchSize: 1000b
+    batchDuration: 10s
+  - name: Remote out
+    type: OUTPUT_PORT

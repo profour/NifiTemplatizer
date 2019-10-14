@@ -1,5 +1,6 @@
 package dev.nifi.yml;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RulesYML {
@@ -12,7 +13,7 @@ public class RulesYML {
 	/**
 	 * Advanced rules based on triggers that conditionally generate attributes
 	 */
-	public List<RuleYML> rules;
+	public final List<RuleYML> rules = new ArrayList<RuleYML>();
 	
 	/**
 	 * Don't use. Only for deserialization.
@@ -21,6 +22,6 @@ public class RulesYML {
 	
 	public RulesYML(String flowFilePolicy, List<RuleYML> rules) {
 		this.policy = flowFilePolicy;
-		this.rules = rules;
+		this.rules.addAll(rules);
 	}
 }

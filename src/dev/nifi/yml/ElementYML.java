@@ -6,22 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.nifi.api.toolkit.model.ConnectionEntity;
-import org.apache.nifi.api.toolkit.model.FunnelEntity;
-import org.apache.nifi.api.toolkit.model.LabelEntity;
-import org.apache.nifi.api.toolkit.model.PortEntity;
-import org.apache.nifi.api.toolkit.model.PositionDTO;
-import org.apache.nifi.api.toolkit.model.ProcessGroupEntity;
-import org.apache.nifi.api.toolkit.model.ProcessorConfigDTO;
-import org.apache.nifi.api.toolkit.model.ProcessorEntity;
-import org.apache.nifi.api.toolkit.model.PropertyDescriptorDTO;
-import org.apache.nifi.api.toolkit.model.RemoteProcessGroupDTO;
-import org.apache.nifi.api.toolkit.model.RemoteProcessGroupEntity;
+import org.apache.nifi.api.toolkit.model.*;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 import dev.nifi.xml.Criteria;
 import dev.nifi.xml.Rules;
+import dev.nifi.yml.HelperYML.ReservedComponents;
 
 public class ElementYML {
 
@@ -76,6 +67,11 @@ public class ElementYML {
 	 * All incoming connections to this Processor
 	 */
 	public final List<InputConnectionYML> inputs = new ArrayList<>();
+	
+	/**
+	 * Settings on remote ports
+	 */
+	public final List<RemotePortYML> remotePorts = new ArrayList<>();
 
 	/**
 	 * Advanced rules based on triggers that conditionally generate attributes
@@ -225,8 +221,14 @@ public class ElementYML {
 			this.properties.put(HelperYML.YIELD_DURATION, config.getYieldDuration());
 		}
 		
-		// TODO: It is possible to configure settings on the remote ports of a RemoteProcessGroup
-		// RemoteProcessGroupContentsDTO remotePortConfigs = config.getContents();
+		// Remote port configuration settings
+		RemoteProcessGroupContentsDTO remotePortConfigs = config.getContents();
+		for (RemoteProcessGroupPortDTO port : remotePortConfigs.getInputPorts()) {
+			remotePorts.add(new RemotePortYML(port, ReservedComponents.INPUT_PORT));
+		}
+		for (RemoteProcessGroupPortDTO port : remotePortConfigs.getOutputPorts()) {
+			remotePorts.add(new RemotePortYML(port, ReservedComponents.OUTPUT_PORT));
+		}
 	}
 
 	/**
