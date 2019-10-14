@@ -30,9 +30,11 @@ public class ImportCommand extends BaseCommand {
 	
 	private final String importDir;
 	
+	private final boolean developerMode;
+	
 	private ObjectBuilder builder = new ObjectBuilder(getApiClient(), getClientId());
 	
-	public ImportCommand(final String importDir) {
+	public ImportCommand(final String importDir, boolean devMode) {
 		super();
 		
 		if (importDir == null) {
@@ -40,6 +42,8 @@ public class ImportCommand extends BaseCommand {
 		} else {
 			this.importDir = importDir;
 		}
+		
+		this.developerMode = devMode;
 	}
 
 	@Override
@@ -103,8 +107,12 @@ public class ImportCommand extends BaseCommand {
 			// Linkage must run after create elements to ensure all src/dst pairs can be satisfied
 			createLinkage(template);
 			
-			// Create a label on the canvas to store useful data for NiFi Templatizer to store state
-			createMetadataLabel(template);
+			// Only create this metadata label if reproducible exports are needed (active development)
+			// Production Install/Deployments should set this to false unless you expect to make modifications in production (don't do it!)
+			if (this.developerMode) {
+				// Create a label on the canvas to store useful data for NiFi Templatizer to store state
+				createMetadataLabel(template);
+			}
 		} finally {
 			builder.leaveProcessGroup();
 		}
@@ -240,7 +248,7 @@ public class ImportCommand extends BaseCommand {
 		ClearCommand clear = new ClearCommand();
 		clear.run();
 		
-		ImportCommand importCmd = new ImportCommand("./examples/simple/");
+		ImportCommand importCmd = new ImportCommand("./examples/simple/", true);
 		importCmd.run();
 	}
 }
