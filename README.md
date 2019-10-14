@@ -113,7 +113,7 @@ The purpose of this project is to create exports of NiFi workspaces that are eas
 Test workspace to cover lots of commonly used features in NiFi. The exported YAML is roughly 1/10th the size of the XML template export.
 
 Total Size: 
-- YAML Export = 5297 bytes (8% size of XML)
+- YAML Export = 5571 bytes (8% size of XML)
 - XML  Export = 66842 bytes
 
 [Export of the NiFi template XML](https://github.com/profour/NifiTemplatizer/blob/master/examples/simple/Simple_Example.xml)
