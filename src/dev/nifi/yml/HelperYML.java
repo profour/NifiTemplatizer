@@ -131,13 +131,14 @@ public class HelperYML {
 			   HelperYML.ReservedComponents.OUTPUT_PORT.isType(type);
 	}
 	
-	public static boolean isReserved(String type) {
+	public static boolean isProcessor(String type) {
 		for (ReservedComponents c : ReservedComponents.values()) {
 			if (c.isType(type)) {
-				return true;
+				return false;
 			}
 		}
-		return false;
+		// If it isn't a reserved type, it must be a processor
+		return true;
 	}
 	
 	public static List<TemplateYML> load(final String importDir) throws JsonParseException, JsonMappingException, IOException {

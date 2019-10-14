@@ -258,7 +258,7 @@ public class ImportCommand extends BaseCommand {
 		// Auto Terminate relationships that were unused
 		for (ElementYML element : template.components) {
 			// Skip past any non-processor types (only processors can have relationships)
-			if (HelperYML.isReserved(element.type)) {
+			if (HelperYML.isProcessor(element.type)) {
 				continue;
 			}
 			
