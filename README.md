@@ -18,7 +18,7 @@ The purpose of this project is to create exports of NiFi workspaces that are eas
     - [ ] Scheduling 
       - (schedulingStrategy, schedulingPeriod, maxTasks, penaltyDuration, yieldDuration, runDuration, executionNode)
     - [ ] Bulletin Level
-    - [ ] Terminated relationships
+    - [x] Terminated relationships (auto terminating based on unused state)
     - [x] Comments
   - [ ] Ports (Input/Output)
     - [x] Name
@@ -70,7 +70,7 @@ The purpose of this project is to create exports of NiFi workspaces that are eas
     - [x] Scheduling 
       - (schedulingStrategy, schedulingPeriod, maxTasks, penaltyDuration, yieldDuration, runDuration, executionNode)
     - [x] Bulletin Level
-    - [ ] ~~Terminated relationships (may just be implied)~~
+    - [x] ~~Terminated relationships (implied atm)~~
     - [x] Comments
   - [x] Ports (Input/Output)
     - [x] Name
