@@ -2,6 +2,9 @@
 The purpose of this project is to create exports of NiFi workspaces that are easier for developers to read and modify. With that purpose in mind, a simplified YAML format was generated to concisely express the content in the NiFi workspace. As an added bonus, the simplified YAML format also makes it easier to perform standard actions (diffs/merges/etc) in version control systems to track changes over time to the NiFi workspace.
 
 # Commands:
+Feature compliance is being validated against NiFi 1.8.0 API DAOs: [Link](https://github.com/apache/nifi/tree/rel/nifi-1.8.0/nifi-nar-bundles/nifi-framework-bundle/nifi-framework/nifi-web/nifi-web-api/src/main/java/org/apache/nifi/web/dao/impl)
+  
+  
 * Import (60% complete)
   - [x] Generic
     - [x] Position
