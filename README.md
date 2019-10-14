@@ -7,7 +7,7 @@ The purpose of this project is to create exports of NiFi workspaces that are eas
     - [x] Position
   - [ ] Controllers
     - [x] Name
-    - [ ] Annotation Data
+    - [x] ~~Annotation Data (Field exists, but not sure what its for?)~~
     - [x] Comments
     - [ ] Properties
   - [ ] Processors
@@ -54,9 +54,9 @@ The purpose of this project is to create exports of NiFi workspaces that are eas
   - [x] Dependency Tree
     - [x] Extract all dependencies of workspace
     - [x] Canonical name generation for dependencies
-  - [ ] Controllers
+  - [x] Controllers
     - [x] Name
-    - [ ] Annotation Data
+    - [x] ~~Annotation Data  (Field exists, but not sure what its for?)~~
     - [x] Comments
     - [x] Properties
   - [ ] Processors
