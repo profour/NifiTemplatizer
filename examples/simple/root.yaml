@@ -16,67 +16,98 @@ dependencies:
 
 controllers:
 - name: StandardHttpContextMap
-  id: e148ee71-74e6-387e-9009-8c291cfe5b92
+  type: StandardHttpContextMap
+  id: e148ee71-74e6-387e-6e3b-fd46cc0456a4
   properties:
     Maximum Outstanding Requests: 500
 
 components:
 - name: Remote Input
   type: INPUT_PORT
-  id: a2a91b0f-fe85-39b7-616f-e151d56f883e
-  position: 2502,706
+  id: a2a91b0f-fe85-39b7-b607-664e016a9f1d
+  position: 3189,878
 
 - name: Remote out
   type: OUTPUT_PORT
-  id: 2ba83dc5-4b22-38f0-6113-aeb5a2acd909
-  position: 3123,1541
+  id: 2ba83dc5-4b22-38f0-770e-55adebab3561
+  position: 3810,1714
   inputs:
-  - source: bbfb5e15-016c-1000-24e9-c7827e34b838
+  - source: a43f8a99-c459-3aa9-d6c1-92c3ac084fe7
+    from:
+    - Output1
+
+- name: LogAttribute
+  type: LogAttribute
+  id: 0ed325fb-3d55-3935-74fd-3253e108877f
+  position: 3842,1411
+  inputs:
+  - source: 92136135-3d3f-33bd-d38b-3772a433f9a6
+    from:
+    - Funnel
+  - source: 5469f8d8-a039-38e6-821a-68b0ce21a1a9
+    from:
+    - set state fail
+    - success
+    properties:
+      backPressureObjectThreshold: 10
+      labelIndex: 0
+      prioritizers:
+      - org.apache.nifi.prioritizer.OldestFlowFileFirstPrioritizer
+      - org.apache.nifi.prioritizer.PriorityAttributePrioritizer
+    position:
+    - 3752,1095
+    - 4012,1189
+  - source: a43f8a99-c459-3aa9-d6c1-92c3ac084fe7
     from:
     - Output1
 
 - name: HandleHttpRequest
   type: HandleHttpRequest
-  id: aa1f6a5f-0f1e-37fe-12d9-67edf84558ca
-  position: 1456,724
+  id: aa1f6a5f-0f1e-37fe-d421-5ec3828f0587
+  position: 2143,897
   properties:
-    HTTP Context Map: e148ee71-74e6-387e-9009-8c291cfe5b92
-
-- name: UpdateAttribute@2
-  type: UpdateAttribute
-  id: 5947ea14-3369-39b5-4c32-c020072f1cdf
-  position: 1978,745
-  inputs:
-  - source: aa1f6a5f-0f1e-37fe-12d9-67edf84558ca
-    from:
-    - success
+    HTTP Context Map: e148ee71-74e6-387e-6e3b-fd46cc0456a4
 
 - name: HandleHttpResponse
   type: HandleHttpResponse
-  id: fc21ff2e-bb6b-36f2-ad25-693765feb650
-  position: 3636,1262
+  id: fc21ff2e-bb6b-36f2-c43f-1421ff6a7890
+  position: 4323,1434
   properties:
-    HTTP Context Map: e148ee71-74e6-387e-9009-8c291cfe5b92
+    HTTP Context Map: e148ee71-74e6-387e-6e3b-fd46cc0456a4
     HTTP Status Code: 200
   inputs:
-  - source: 0ed325fb-3d55-3935-0a0a-7f6c0ea15913
+  - source: 0ed325fb-3d55-3935-74fd-3253e108877f
+    from:
+    - success
+
+- name: UpdateAttribute@2
+  type: UpdateAttribute
+  id: 5947ea14-3369-39b5-8639-94dd768fd750
+  position: 2665,918
+  scheduling:
+    execution: PRIMARY
+    runSchedule: '* * * * * ?'
+    schedulingStrategy: CRON_DRIVEN
+  inputs:
+  - source: aa1f6a5f-0f1e-37fe-d421-5ec3828f0587
     from:
     - success
 
 - name: UpdateAttribute
   type: UpdateAttribute
-  id: 5469f8d8-a039-38e6-a49c-edfef4c0bc7c
-  position: 2441,953
+  id: 5469f8d8-a039-38e6-821a-68b0ce21a1a9
+  position: 3128,1125
   comment: This is a comment about how UpdateAttribute works.
   properties:
+    Stateful Variables Initial Value: asdf
     Store State: Store state locally
     newAttribute: ${uuid}
     test: asdf
   styles:
     background-color: '#e02020'
   inputs:
-  - source: a2a91b0f-fe85-39b7-616f-e151d56f883e
-  - source: 5947ea14-3369-39b5-4c32-c020072f1cdf
+  - source: a2a91b0f-fe85-39b7-b607-664e016a9f1d
+  - source: 5947ea14-3369-39b5-8639-94dd768fd750
     from:
     - success
   advanced:
@@ -92,83 +123,60 @@ components:
       actions:
         otherValue: asdf@
 
-- name: LogAttribute
-  type: LogAttribute
-  id: 0ed325fb-3d55-3935-0a0a-7f6c0ea15913
-  position: 3155,1238
-  inputs:
-  - source: bbfb5e15-016c-1000-24e9-c7827e34b838
-    from:
-    - Output1
-  - source: 92136135-3d3f-33bd-739f-74b2d994e73e
-    from:
-    - Funnel
-  - source: 5469f8d8-a039-38e6-a49c-edfef4c0bc7c
-    from:
-    - set state fail
-    - success
-    properties:
-      backPressureObjectThreshold: 10
-      prioritizers:
-      - org.apache.nifi.prioritizer.OldestFlowFileFirstPrioritizer
-      - org.apache.nifi.prioritizer.PriorityAttributePrioritizer
-    position:
-    - 3065,922
-    - 3325,1017
-
 - name: RemoteLogAttribute
   type: LogAttribute
-  id: 78e2ba79-a996-3df8-ce69-3c4aab72c1c0
-  position: 3092,1668
+  id: 78e2ba79-a996-3df8-f272-857ae51fa010
+  position: 3779,1841
   inputs:
-  - source: d8323ec6-bbe8-3f22-5bd0-2df7f8d6dd2b
+  - source: d8323ec6-bbe8-3f22-cf06-fa9219a4328c
     from:
     - Remote out
 
 - type: FUNNEL
-  id: 92136135-3d3f-33bd-739f-74b2d994e73e
-  position: 2906,1158
+  id: 92136135-3d3f-33bd-d38b-3772a433f9a6
+  position: 3594,1330
   inputs:
-  - source: 5469f8d8-a039-38e6-a49c-edfef4c0bc7c
+  - source: a43f8a99-c459-3aa9-d6c1-92c3ac084fe7
+    from:
+    - Output2
+  - source: 5469f8d8-a039-38e6-821a-68b0ce21a1a9
     from:
     - set state fail
     - success
-  - source: bbfb5e15-016c-1000-24e9-c7827e34b838
-    from:
-    - Output2
 
 - type: LABEL
-  id: dc64abc3-244f-32d9-ec0f-a3e16f119540
-  position: 1901,1147
+  id: dc64abc3-244f-32d9-0a04-fb279fcb8ccf
+  position: 2588,1319
   comment: |
     Test label
   styles:
+    background-color: '#d6ffd6'
     height: 150
     width: 150
 
 - name: Test
   type: PROCESS_GROUP
-  id: bbfb5e15-016c-1000-24e9-c7827e34b838
-  template: bbfb5e15-016c-1000-24e9-c7827e34b838.yaml
-  position: 2416,1301
+  id: a43f8a99-c459-3aa9-d6c1-92c3ac084fe7
+  template: a43f8a99-c459-3aa9-d6c1-92c3ac084fe7.yaml
+  position: 3103,1474
   comment: dsfgsdfg
   inputs:
-  - source: 5469f8d8-a039-38e6-a49c-edfef4c0bc7c
+  - source: 5469f8d8-a039-38e6-821a-68b0ce21a1a9
     from:
     - success
     to: Input1
     position:
-    - 2036,1358
+    - 2723,1530
 
 - name: NiFi Flow
   type: REMOTE_PROCESS_GROUP
-  id: d8323ec6-bbe8-3f22-5bd0-2df7f8d6dd2b
-  position: 2406,1635
+  id: d8323ec6-bbe8-3f22-cf06-fa9219a4328c
+  position: 3093,1807
   properties:
     protocol: HTTP
     targetUris: http://localhost:8080/nifi
   inputs:
-  - source: bbfb5e15-016c-1000-24e9-c7827e34b838
+  - source: a43f8a99-c459-3aa9-d6c1-92c3ac084fe7
     from:
     - Output1
     to: Remote Input
