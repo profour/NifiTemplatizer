@@ -15,6 +15,8 @@ public class RemotePortYML {
 	public String batchSize;
 	public String batchDuration;
 	
+	// Only used by Jackson deserialization
+	public RemotePortYML() {}
 	
 	public RemotePortYML(RemoteProcessGroupPortDTO port, ReservedComponents type) {
 		this.name = port.getName();

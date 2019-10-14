@@ -1,15 +1,21 @@
 package dev.nifi.commands;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.nifi.api.toolkit.ApiException;
 import org.apache.nifi.api.toolkit.api.ProcessGroupsApi;
+import org.apache.nifi.api.toolkit.api.ProcessorsApi;
 import org.apache.nifi.api.toolkit.model.BundleDTO;
 import org.apache.nifi.api.toolkit.model.PositionDTO;
 import org.apache.nifi.api.toolkit.model.ProcessGroupEntity;
+import org.apache.nifi.api.toolkit.model.ProcessorEntity;
+import org.apache.nifi.api.toolkit.model.RelationshipDTO;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -27,6 +33,7 @@ import dev.nifi.yml.TemplateYML;
 public class ImportCommand extends BaseCommand {
 
 	private final ProcessGroupsApi processGroupAPI = new ProcessGroupsApi(getApiClient());
+	private final ProcessorsApi processorAPI = new ProcessorsApi(getApiClient());
 	
 	private final String importDir;
 	
@@ -189,7 +196,7 @@ public class ImportCommand extends BaseCommand {
 			if (dep != null) {
 				builder.makeProcessor(ele);
 			} else {
-				ReservedComponents type = ReservedComponents.valueOf(ele.getType());
+				ReservedComponents type = ReservedComponents.valueOf(ele.getType().toUpperCase());
 				switch (type) {
 				case FUNNEL:
 				{
@@ -220,6 +227,8 @@ public class ImportCommand extends BaseCommand {
 	
 	private void createLinkage(TemplateYML template) throws ApiException {
 		
+		Map<String, Set<String>> usedRelationships = new HashMap<>();
+		
 		Map<String, ElementYML> lookup = new HashMap<String, ElementYML>();
 		for (ElementYML element : template.components) {
 			lookup.put(element.id, element);
@@ -237,6 +246,45 @@ public class ImportCommand extends BaseCommand {
 				ElementYML source = lookup.get(input.source);
 				
 				builder.makeConnection(source, destination, input);
+				
+				// Track which relationships were used
+				if (!usedRelationships.containsKey(source.id)) {
+					usedRelationships.put(source.id, new HashSet<String>());
+				}
+				usedRelationships.get(source.id).addAll(input.from);
+			}
+		}
+		
+		// Auto Terminate relationships that were unused
+		for (ElementYML element : template.components) {
+			// Skip past any non-processor types (only processors can have relationships)
+			if (HelperYML.isReserved(element.type)) {
+				continue;
+			}
+			
+			// Check if this processor has any relationships that have been used
+			Set<String> used = usedRelationships.get(element.id);
+			if (used == null) {
+				used = new HashSet<String>();
+			}
+			
+			// Pull the configuration for the processor as-is in NiFi
+			String newId = builder.getNewId(element.id);
+			ProcessorEntity processor = processorAPI.getProcessor(newId);
+			
+			// Search for the unused relationships
+			List<String> unused = new ArrayList<String>();
+			for (RelationshipDTO relationship : processor.getComponent().getRelationships()) {
+				if (!used.contains(relationship.getName())) {
+					unused.add(relationship.getName());
+				}
+			}
+			
+			// If there are any unused relationships, auto terminate them
+			if (!unused.isEmpty()) {
+				processor.getComponent().getConfig().setAutoTerminatedRelationships(unused);
+				
+				processorAPI.updateProcessor(processor.getId(), processor);
 			}
 		}
 	}

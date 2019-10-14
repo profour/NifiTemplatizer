@@ -131,7 +131,14 @@ public class HelperYML {
 			   HelperYML.ReservedComponents.OUTPUT_PORT.isType(type);
 	}
 	
-
+	public static boolean isReserved(String type) {
+		for (ReservedComponents c : ReservedComponents.values()) {
+			if (c.isType(type)) {
+				return true;
+			}
+		}
+		return false;
+	}
 	
 	public static List<TemplateYML> load(final String importDir) throws JsonParseException, JsonMappingException, IOException {
 		List<TemplateYML> templates = new ArrayList<TemplateYML>();

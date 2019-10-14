@@ -47,6 +47,18 @@ public class ObjectBuilder {
 		this.processGroupStack.peek().dependencies = depLookup;
 	}
 	
+	public String getProcessGroupId() {
+		return processGroupStack.peek().id;
+	}
+	
+	public Pair<String, BundleDTO> lookup(String canonicalName) {
+		return processGroupStack.peek().dependencies.get(canonicalName);
+	}
+
+	public String getNewId(String id) {
+		return tracker.lookupByOldId(id);
+	}
+	
 	public ControllerServiceEntity makeControllerService(ControllerYML controller) throws ApiException {
 		ControllerServiceEntity cont = new ControllerServiceEntity();
 		ControllerServiceDTO dto = new ControllerServiceDTO();
@@ -386,14 +398,6 @@ public class ObjectBuilder {
 		rev.setClientId(clientId);
 		rev.setVersion(0L);
 		return rev;
-	}
-	
-	public String getProcessGroupId() {
-		return processGroupStack.peek().id;
-	}
-	
-	public Pair<String, BundleDTO> lookup(String canonicalName) {
-		return processGroupStack.peek().dependencies.get(canonicalName);
 	}
 	
 	private class ProcessGroupStackElement {
