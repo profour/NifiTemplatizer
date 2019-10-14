@@ -48,7 +48,7 @@ The purpose of this project is to create exports of NiFi workspaces that are eas
       - flowFileExpiration, backPressureObjectThreshold, backPressureDataSizeThreshold, prioritizers
       - loadBalanceStrategy, loadBalancePartition, loadBalanceCompression
     - [ ] Link bends (aesthetic)
-    - [ ] Label Index?
+    - [ ] Label Index (which bend the label goes on)
     - [ ] Z index
     - [ ] Links to/from RemoteProcessGroups
 * Export (95% complete)
@@ -62,7 +62,7 @@ The purpose of this project is to create exports of NiFi workspaces that are eas
     - [x] ~~Annotation Data  (Field exists, but not sure what its for?)~~
     - [x] Comments
     - [x] Properties
-  - [ ] Processors
+  - [x] Processors
     - [x] Name
     - [x] Styles (Colors/Fonts)
     - [x] Properties
@@ -70,16 +70,16 @@ The purpose of this project is to create exports of NiFi workspaces that are eas
     - [x] Scheduling 
       - (schedulingStrategy, schedulingPeriod, maxTasks, penaltyDuration, yieldDuration, runDuration, executionNode)
     - [x] Bulletin Level
-    - [ ] Terminated relationships (may just be implied)
+    - [ ] ~~Terminated relationships (may just be implied)~~
     - [x] Comments
   - [x] Ports (Input/Output)
     - [x] Name
     - [x] Comments
   - [x] Funnels
-  - [ ] Process Groups
+  - [x] Process Groups
     - [x] Name
     - [x] Comments
-    - [ ] De-duplicate structurally similar templates (extract variables for varying properties)
+    - [ ] STRETCH: De-duplicate structurally similar templates (extract variables for varying properties)
   - [ ] Remote Process Groups
     - [x] TargetUris
     - [x] Name
@@ -94,13 +94,13 @@ The purpose of this project is to create exports of NiFi workspaces that are eas
     - [x] Comment
     - [x] Styles (Colors/Fonts)
     - [x] Width/Height
-  - [ ] Connectivity (Inputs/Outputs/Relationships) (90%)
+  - [x] Connectivity (Inputs/Outputs/Relationships) (90%)
     - [x] Name
     - [x] Queueing properties
       - flowFileExpiration, backPressureObjectThreshold, backPressureDataSizeThreshold, prioritizers
       - loadBalanceStrategy, loadBalancePartition, loadBalanceCompression
     - [x] Link bends (aesthetic)
-    - [x] Label Index?
+    - [x] Label Index (which bend the label goes on)
     - [x] Z index
 * Clean (100% complete)
   - Remove all content from workspace (clean slate)
