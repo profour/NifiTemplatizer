@@ -12,6 +12,8 @@ import org.apache.nifi.api.toolkit.ApiException;
 import org.apache.nifi.api.toolkit.api.ProcessGroupsApi;
 import org.apache.nifi.api.toolkit.model.*;
 import org.apache.nifi.api.toolkit.model.ConnectableDTO.TypeEnum;
+import org.apache.nifi.api.toolkit.model.ConnectionDTO.LoadBalanceCompressionEnum;
+import org.apache.nifi.api.toolkit.model.ConnectionDTO.LoadBalanceStrategyEnum;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -324,8 +326,8 @@ public class ObjectBuilder {
 		
 		ConnectionEntity conn = new ConnectionEntity();
 		conn.setRevision(getRevision());
-		
 		ConnectionDTO dto = new ConnectionDTO();
+		conn.setComponent(dto);
 		
 		// Set the source & destination of the connection
 		ConnectableDTO src = makeSourceConnectable(sourceElement, input.from);
@@ -345,7 +347,75 @@ public class ObjectBuilder {
 				!ReservedComponents.FUNNEL.isType(sourceElement.type)) {
 			dto.setSelectedRelationships(input.from);
 		}
-		conn.setComponent(dto);
+		
+		// Check if there are bends in the connection (aesthetic)
+		if (input.position != null) {
+			List<PositionDTO> bends = new ArrayList<>();
+			
+			for (String xyString : input.position) {
+				bends.add(HelperYML.createPosition(xyString));
+			}
+			
+			dto.setBends(bends);
+		}
+		
+		// Check for special link properties
+		if (input.properties != null && !input.properties.isEmpty()) {
+			String name = castToString(input.properties.get(HelperYML.NAME));
+			String zIndex = castToString(input.properties.get(HelperYML.Z_INDEX));
+			String labelIndex = castToString(input.properties.get(HelperYML.LABEL_INDEX));
+			String bpObjThreshold = castToString(input.properties.get(HelperYML.BACK_PRESSURE_OBJECT_THRESHOLD));
+			String bpDataSizeThreshold = castToString(input.properties.get(HelperYML.BACK_PRESSURE_DATA_SIZE_THRESHOLD));
+			String lbStrategy = castToString(input.properties.get(HelperYML.LOAD_BALANCE_STRATEGY));
+			String lbPartition = castToString(input.properties.get(HelperYML.LOAD_BALANCE_PARTITION_ATTRIBUTE));
+			String lbCompression = castToString(input.properties.get(HelperYML.LOAD_BALANCE_COMPRESSION));
+			String ffExpiration = castToString(input.properties.get(HelperYML.FLOW_FILE_EXPIRATION));
+			Object prioritizers = input.properties.get(HelperYML.PRIORITIZERS);
+
+			if (name != null && !name.isEmpty()) {
+				dto.setName(name);
+			}
+			if (zIndex != null && !zIndex.isEmpty()) {
+				// TODO: Add checking and error logging
+				dto.setGetzIndex(Long.parseLong(zIndex));
+			}
+			if (labelIndex != null && !labelIndex.isEmpty()) {
+				// TODO: Add checking and error logging
+				dto.setLabelIndex(Integer.parseInt(labelIndex));
+			}
+			if (bpObjThreshold != null && !bpObjThreshold.isEmpty()) {
+				// TODO: Add checking and error logging
+				dto.setBackPressureObjectThreshold(Long.parseLong(bpObjThreshold));
+			}
+			if (bpDataSizeThreshold != null && !bpDataSizeThreshold.isEmpty()) {
+				dto.setBackPressureDataSizeThreshold(bpDataSizeThreshold);
+			}
+			if (lbStrategy != null && !lbStrategy.isEmpty()) {
+				// TODO: Add checking and error logging
+				dto.setLoadBalanceStrategy(LoadBalanceStrategyEnum.valueOf(lbStrategy));
+			}
+			if (lbPartition != null && !lbPartition.isEmpty()) {
+				dto.setLoadBalancePartitionAttribute(lbPartition);
+			}
+			if (lbCompression != null && !lbCompression.isEmpty()) {
+				// TODO: Add checking and error logging
+				dto.setLoadBalanceCompression(LoadBalanceCompressionEnum.valueOf(lbCompression));
+			}
+			if (ffExpiration != null && !ffExpiration.isEmpty()) {
+				dto.setFlowFileExpiration(ffExpiration);
+			}
+			if (prioritizers != null && prioritizers instanceof List) {
+				List<String> prio = new ArrayList<String>();
+				
+				// Since type erasure prevented us from going directly to List<String>, 
+				// just loop and convert all elements to strings
+				for (Object o : (List<?>) prioritizers) {
+					prio.add(o.toString());
+				}
+				
+				dto.setPrioritizers(prio);
+			}
+		}
 		
 		return processGroupAPI.createConnection(getProcessGroupId(), conn);
 	}
@@ -494,6 +564,10 @@ public class ObjectBuilder {
 		rev.setClientId(clientId);
 		rev.setVersion(0L);
 		return rev;
+	}
+	
+	private String castToString(Object o) {
+		return (o != null && o instanceof String) ? (String) o : null;
 	}
 	
 	private class ProcessGroupStackElement {

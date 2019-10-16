@@ -94,7 +94,7 @@ public class InputConnectionYML {
 			this.properties.put(HelperYML.LABEL_INDEX, conn.getLabelIndex());
 		}
 		if (conn.getBackPressureObjectThreshold() != HelperYML.DEFAULT_BACK_PRESSURE_OBJECT_THRESHOLD) {
-			this.properties.put(HelperYML.BACK_PRESSURE_OBJECT_THRESHOLD, conn.getBackPressureObjectThreshold().toString());
+			this.properties.put(HelperYML.BACK_PRESSURE_OBJECT_THRESHOLD, conn.getBackPressureObjectThreshold());
 		}
 		if (!conn.getBackPressureDataSizeThreshold().equals(HelperYML.DEFAULT_BACK_PRESSURE_DATA_SIZE_THRESHOLD)) {
 			this.properties.put(HelperYML.BACK_PRESSURE_DATA_SIZE_THRESHOLD, conn.getBackPressureDataSizeThreshold());
