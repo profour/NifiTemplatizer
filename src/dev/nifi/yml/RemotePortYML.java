@@ -34,4 +34,12 @@ public class RemotePortYML {
 		this.batchSize = port.getBatchSettings().getSize();
 		this.batchDuration = port.getBatchSettings().getDuration();
 	}
+
+	public boolean isDefault() {
+		return this.maxConcurrentTasks == null &&
+				this.useCompression == null &&
+				this.batchCount == null &&
+				this.batchSize == null &&
+				this.batchDuration == null;
+	}
 }

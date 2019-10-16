@@ -19,18 +19,9 @@ import org.apache.nifi.api.toolkit.model.ConnectionDTO.LoadBalanceStrategyEnum;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
-import dev.nifi.xml.Actions;
-import dev.nifi.xml.Conditions;
-import dev.nifi.xml.Criteria;
-import dev.nifi.xml.Rules;
-import dev.nifi.yml.ControllerYML;
-import dev.nifi.yml.ElementYML;
-import dev.nifi.yml.HelperYML;
+import dev.nifi.xml.*;
+import dev.nifi.yml.*;
 import dev.nifi.yml.HelperYML.ReservedComponents;
-import dev.nifi.yml.InputConnectionYML;
-import dev.nifi.yml.RuleYML;
-import dev.nifi.yml.RulesYML;
-import dev.nifi.yml.TemplateYML;
 
 public class ObjectBuilder {
 
@@ -226,12 +217,53 @@ public class ObjectBuilder {
 		
 		// Check if we successfully got a configured object or if a timeout occurred
 		if (response != null) {
+			// Build some quick lookups to help later to apply configurations
+			Map<String, RemotePortYML> inputConfigs = new HashMap<>();
+			Map<String, RemotePortYML> outputConfigs = new HashMap<>();
+			if (ele.remotePorts != null) {
+				for (RemotePortYML port : ele.remotePorts) {
+					if (ReservedComponents.INPUT_PORT.isType(port.type)) {
+						inputConfigs.put(port.name, port);
+					} else if (ReservedComponents.OUTPUT_PORT.isType(port.type)) {
+						outputConfigs.put(port.name, port);
+					} else {
+						// TODO: add logging to warn of unexpected remote port type
+					}
+				}
+			}
+			
 			if (response.getComponent() != null && response.getComponent().getContents() != null) {
 				RemoteProcessGroupContentsDTO  contents = response.getComponent().getContents();
 				
 				// Track any information about remote input ports ( Port name -> id)
 				if (contents.getInputPorts() != null) {
 					for (RemoteProcessGroupPortDTO port : contents.getInputPorts()) {
+						// Check if it has config data in the YML file
+						if (inputConfigs.containsKey(port.getName())) {
+							RemotePortYML portConfig = inputConfigs.get(port.getName());
+							
+							// Only bother with API updates if the config has non-default settings
+							if (!portConfig.isDefault()) {
+								if (portConfig.useCompression != null) {
+									port.setUseCompression(portConfig.useCompression);
+								}
+								if (portConfig.maxConcurrentTasks != null) {
+									port.setConcurrentlySchedulableTaskCount(portConfig.maxConcurrentTasks);
+								}
+								
+								// Set batch settings
+								port.getBatchSettings().setCount(portConfig.batchCount);
+								port.getBatchSettings().setDuration(portConfig.batchDuration);
+								port.getBatchSettings().setSize(portConfig.batchSize);
+								
+								// Call the API to update these remote port settings
+								RemoteProcessGroupPortEntity portEntity = new RemoteProcessGroupPortEntity();
+								portEntity.setRevision(getRevision());
+								portEntity.setRemoteProcessGroupPort(port);
+								remoteProcessGroupAPI.updateRemoteProcessGroupInputPort(response.getId(), port.getId(), portEntity);
+							}
+						}
+						
 						tracker.track(response.getId(), port.getName(), ReservedComponents.INPUT_PORT.name(), port.getId());
 					}
 				}
@@ -239,6 +271,32 @@ public class ObjectBuilder {
 				// Track any information about remote output ports ( Port name -> id)
 				if (contents.getOutputPorts() != null) {
 					for (RemoteProcessGroupPortDTO port : contents.getOutputPorts()) {
+						// Check if it has config data in the YML file
+						if (outputConfigs.containsKey(port.getName())) {
+							RemotePortYML portConfig = outputConfigs.get(port.getName());
+
+							// Only bother with API updates if the config has non-default settings
+							if (!portConfig.isDefault()) {
+								if (portConfig.useCompression != null) {
+									port.setUseCompression(portConfig.useCompression);
+								}
+								if (portConfig.maxConcurrentTasks != null) {
+									port.setConcurrentlySchedulableTaskCount(portConfig.maxConcurrentTasks);
+								}
+								
+								// Set batch settings
+								port.getBatchSettings().setCount(portConfig.batchCount);
+								port.getBatchSettings().setDuration(portConfig.batchDuration);
+								port.getBatchSettings().setSize(portConfig.batchSize);
+	
+								// Call the API to update these remote port settings
+								RemoteProcessGroupPortEntity portEntity = new RemoteProcessGroupPortEntity();
+								portEntity.setRevision(getRevision());
+								portEntity.setRemoteProcessGroupPort(port);
+								remoteProcessGroupAPI.updateRemoteProcessGroupOutputPort(response.getId(), port.getId(), portEntity);
+							}
+						}
+						
 						tracker.track(response.getId(), port.getName(), ReservedComponents.OUTPUT_PORT.name(), port.getId());
 					}
 				}
