@@ -5,7 +5,7 @@ The purpose of this project is to create exports of NiFi workspaces that are eas
 Feature compliance is being validated against NiFi 1.8.0 API DAOs: [Link](https://github.com/apache/nifi/tree/rel/nifi-1.8.0/nifi-nar-bundles/nifi-framework-bundle/nifi-framework/nifi-web/nifi-web-api/src/main/java/org/apache/nifi/web/dao/impl)
   
   
-* Import (60% complete)
+* Import (85% complete)
   - [x] Generic
     - [x] Position
   - [x] Controllers
@@ -33,9 +33,8 @@ Feature compliance is being validated against NiFi 1.8.0 API DAOs: [Link](https:
   - [ ] Remote Process Groups
     - [x] TargetUris
     - [x] Name
-    - [ ] Comments
-    - [ ] Yield Duration
-    - [ ] Connection Properties:
+    - [x] Comments
+    - [x] Connection Properties:
       - Proxy Host, Proxy Port, Proxy User, Proxy Password
       - Communications timeout, Transport Protocol, Local Network Interface, yieldDuration
     - [ ] Remote Port Settings:
