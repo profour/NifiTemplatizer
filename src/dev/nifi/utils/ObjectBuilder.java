@@ -149,6 +149,7 @@ public class ObjectBuilder {
 
 		dto.setName(ele.name);
 		dto.setPosition(HelperYML.createPosition(ele.position));
+		dto.setComments(ele.comment);
 		dto.setTargetUris(ele.properties.get(HelperYML.TARGET_URIS));
 		
 		if (ele.properties != null && !ele.properties.isEmpty()) {
