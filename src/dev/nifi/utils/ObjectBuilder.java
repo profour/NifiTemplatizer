@@ -83,7 +83,6 @@ public class ObjectBuilder {
 		dto.setBundle(dep.t2);
 		dto.setType(dep.t1);
 		
-
 		dto.setName(controller.name);
 		
 		if (controller.properties != null) {
@@ -108,8 +107,7 @@ public class ObjectBuilder {
 		funnel.setComponent(dto);
 		funnel.setRevision(getRevision());
 
-		PositionDTO position = HelperYML.createPosition(ele.position);
-		dto.setPosition(position);
+		dto.setPosition(HelperYML.createPosition(ele.position));
 		
 		FunnelEntity response = processGroupAPI.createFunnel(getProcessGroupId(), funnel);
 
@@ -125,9 +123,8 @@ public class ObjectBuilder {
 		pg.setComponent(dto);
 		pg.setRevision(getRevision());
 
-		PositionDTO position = HelperYML.createPosition(ele.position);
-		dto.setPosition(position);
 		dto.setName(ele.name);
+		dto.setPosition(HelperYML.createPosition(ele.position));
 		
 		ProcessGroupEntity newProcessGroup = processGroupAPI.createProcessGroup(getProcessGroupId(), pg);
 		
@@ -150,11 +147,53 @@ public class ObjectBuilder {
 		RemoteProcessGroupContentsDTO contentsDTO = new RemoteProcessGroupContentsDTO();
 		dto.setContents(contentsDTO);
 
-		PositionDTO position = HelperYML.createPosition(ele.position);
-		dto.setPosition(position);
+		dto.setName(ele.name);
+		dto.setPosition(HelperYML.createPosition(ele.position));
 		dto.setTargetUris(ele.properties.get(HelperYML.TARGET_URIS));
 		
+		if (ele.properties != null && !ele.properties.isEmpty()) {
+			String proxyHost = ele.properties.get(HelperYML.PROXY_HOST);
+			String proxyPort = ele.properties.get(HelperYML.PROXY_PORT);
+			String proxyUser = ele.properties.get(HelperYML.PROXY_USER);
+			String proxyPw = ele.properties.get(HelperYML.PROXY_PASSWORD);
+			String netInterface = ele.properties.get(HelperYML.NETWORK);
+			String protocol = ele.properties.get(HelperYML.PROTOCOL);
+			String timeout = ele.properties.get(HelperYML.TIMEOUT);
+			String yield = ele.properties.get(HelperYML.TIMEOUT);
+			
+			// Set proxy settings
+			if (checkString(proxyHost)) {
+				dto.setProxyHost(proxyHost);
+			}
+			if (checkString(proxyPort)) {
+				dto.setProxyPort(Integer.parseInt(proxyPort)); // TODO: Check int parse errors
+			}
+			if (checkString(proxyUser)) {
+				dto.setProxyUser(proxyUser);
+			}
+			if (checkString(proxyPw)) {
+				dto.setProxyPassword(proxyPw);
+			}
+			
+			// set any values that are non-default for connection properties
+			if (checkString(netInterface)) {
+				dto.setLocalNetworkInterface(netInterface);
+			}
+			if (checkString(protocol)) {
+				dto.setTransportProtocol(protocol);
+			}
+			if (checkString(timeout)) {
+				dto.setCommunicationsTimeout(timeout);
+			}
+			if (checkString(yield)) {
+				dto.setYieldDuration(yield);
+			}
+		}
+		
 		RemoteProcessGroupEntity response = processGroupAPI.createRemoteProcessGroup(getProcessGroupId(), rpg);
+		
+		// TODO: Wait for the remote process to detect the remote ports
+		// TODO: Assign remote port properties once they have been detected
 		
 		// Track the newly created remote process group (old id -> new id)
 		tracker.track(ele.id, response.getId());
@@ -167,11 +206,9 @@ public class ObjectBuilder {
 		PortDTO dto = new PortDTO();
 		port.setComponent(dto);
 		port.setRevision(getRevision());
-		port.setId(ele.id);
 
-		PositionDTO position = HelperYML.createPosition(ele.position);
-		dto.setPosition(position);
 		dto.setName(ele.name);
+		dto.setPosition(HelperYML.createPosition(ele.position));
 		dto.setComments(ele.comment);
 		
 		PortEntity response = processGroupAPI.createOutputPort(getProcessGroupId(), port);
@@ -188,11 +225,9 @@ public class ObjectBuilder {
 		PortDTO dto = new PortDTO();
 		port.setComponent(dto);
 		port.setRevision(getRevision());
-		port.setId(ele.id);
 
-		PositionDTO position = HelperYML.createPosition(ele.position);
-		dto.setPosition(position);
 		dto.setName(ele.name);
+		dto.setPosition(HelperYML.createPosition(ele.position));
 		dto.setComments(ele.comment);
 		
 		PortEntity response = processGroupAPI.createInputPort(getProcessGroupId(), port);
@@ -209,10 +244,8 @@ public class ObjectBuilder {
 		LabelDTO dto = new LabelDTO();
 		label.setComponent(dto);
 		label.setRevision(getRevision());
-		label.setId(ele.id);
 
-		PositionDTO position = HelperYML.createPosition(ele.position);
-		dto.setPosition(position);
+		dto.setPosition(HelperYML.createPosition(ele.position));
 		dto.setLabel(ele.comment);
 
 		if (ele.styles != null) {
@@ -234,7 +267,7 @@ public class ObjectBuilder {
 		return response;
 	}
 
-	public ProcessorEntity makeProcessor(ElementYML element) throws ApiException {
+	public ProcessorEntity makeProcessor(ElementYML ele) throws ApiException {
 		ProcessorEntity p = new ProcessorEntity();
 		ProcessorDTO dto = new ProcessorDTO();
 		dto.setConfig(new ProcessorConfigDTO());
@@ -243,73 +276,74 @@ public class ObjectBuilder {
 		
 		
 		// dto.setId(element.id); Can't specify processor IDs
-		Pair<String, BundleDTO> dependency = this.lookup(element.getType());
+		Pair<String, BundleDTO> dependency = this.lookup(ele.getType());
 		dto.setType(dependency.t1);
 		dto.setBundle(dependency.t2);
 		
-		dto.setName(element.name);
-		dto.setPosition(HelperYML.createPosition(element.position));
-		dto.setStyle(element.styles);
+		dto.setName(ele.name);
+		dto.setPosition(HelperYML.createPosition(ele.position));
+		dto.setStyle(ele.styles);
 		
 		// Set any properties that may have changed from default
-		if (element.properties != null) {
-			for (String key : element.properties.keySet()) {
-				Object val = element.properties.get(key);
+		if (ele.properties != null) {
+			for (String key : ele.properties.keySet()) {
+				Object val = ele.properties.get(key);
 				if (val instanceof String) {
 					String v = (String) val;
 					
 					// Update UUID references in properties
 					String lookup = tracker.lookupByOldId(v);
 					if (lookup != null) {
-						element.properties.put(key, lookup);
+						ele.properties.put(key, lookup);
 					}
 				}
 			}
 			
-			dto.getConfig().setProperties(element.properties);
+			dto.getConfig().setProperties(ele.properties);
 		}
 		
 		// Check if there are any scheduling properties that need to be assigned
-		if (element.scheduling != null && !element.scheduling.isEmpty()) {
-
-			String schedulingPeriod = element.scheduling.get(HelperYML.SCHEDULING_PERIOD);
-			String schedulingStrategy = element.scheduling.get(HelperYML.SCHEDULING_STRATEGY);
-			String maxTasks = element.scheduling.get(HelperYML.SCHEDULABLE_TASK_COUNT); // Integer
-			String penaltyDuration = element.scheduling.get(HelperYML.PENALTY_DURATION);
-			String yieldDuration = element.scheduling.get(HelperYML.YIELD_DURATION);
-			String runDuration = element.scheduling.get(HelperYML.RUN_DURATION); // Long
-			String executionNode = element.scheduling.get(HelperYML.EXECUTION_NODE);
-			String bulletinLevel = element.scheduling.get(HelperYML.BULLETIN_LEVEL);
+		if (ele.scheduling != null && !ele.scheduling.isEmpty()) {
+			String schedulingPeriod = ele.scheduling.get(HelperYML.SCHEDULING_PERIOD);
+			String schedulingStrategy = ele.scheduling.get(HelperYML.SCHEDULING_STRATEGY);
+			String maxTasks = ele.scheduling.get(HelperYML.SCHEDULABLE_TASK_COUNT); // Integer
+			String penaltyDuration = ele.scheduling.get(HelperYML.PENALTY_DURATION);
+			String yieldDuration = ele.scheduling.get(HelperYML.YIELD_DURATION);
+			String runDuration = ele.scheduling.get(HelperYML.RUN_DURATION); // Long
+			String executionNode = ele.scheduling.get(HelperYML.EXECUTION_NODE);
+			String bulletinLevel = ele.scheduling.get(HelperYML.BULLETIN_LEVEL);
 			
-			if (schedulingPeriod != null && !schedulingPeriod.isEmpty()) {
+			if (checkString(schedulingPeriod)) {
 				dto.getConfig().setSchedulingPeriod(schedulingPeriod);
 			}
-			if (schedulingStrategy != null && !schedulingStrategy.isEmpty()) {
+			if (checkString(schedulingStrategy)) {
 				dto.getConfig().setSchedulingStrategy(schedulingStrategy);
 			}
-			if (maxTasks != null && !maxTasks.isEmpty()) {
+			if (checkString(maxTasks)) {
+				// TODO: check and log any parse errors
 				dto.getConfig().setConcurrentlySchedulableTaskCount(Integer.parseInt(maxTasks));
 			}
-			if (penaltyDuration != null && !penaltyDuration.isEmpty()) {
+			if (checkString(penaltyDuration)) {
 				dto.getConfig().setPenaltyDuration(penaltyDuration);
 			}
-			if (yieldDuration != null && !yieldDuration.isEmpty()) {
+			if (checkString(yieldDuration)) {
 				dto.getConfig().setYieldDuration(yieldDuration);
 			}
-			if (runDuration != null && !runDuration.isEmpty()) {
+			if (checkString(runDuration)) {
+				// TODO: check and log any parse errors
 				dto.getConfig().setRunDurationMillis(Long.parseLong(runDuration));
 			}
-			if (executionNode != null && !executionNode.isEmpty()) {
+			if (checkString(executionNode)) {
 				dto.getConfig().setExecutionNode(executionNode);
 			}
-			if (bulletinLevel != null && !bulletinLevel.isEmpty()) {
+			if (checkString(bulletinLevel)) {
 				dto.getConfig().setBulletinLevel(bulletinLevel);
 			}
 		}
 		
 		// Check if there is any annotation data (advanced rules)
-		if (element.advanced != null) {
-			String annotationData = makeAnnotationData(element.advanced);
+		if (ele.advanced != null) {
+			String annotationData = makeAnnotationData(ele.advanced);
 			
 			dto.getConfig().setAnnotationData(annotationData);
 		}
@@ -317,13 +351,12 @@ public class ObjectBuilder {
 		ProcessorEntity response = processGroupAPI.createProcessor(getProcessGroupId(), p);
 		
 		// Track the newly created processor (old id -> new id)
-		tracker.track(element.id, response.getId());
+		tracker.track(ele.id, response.getId());
 		
 		return response;
 	}
 	
 	public ConnectionEntity makeConnection(ElementYML sourceElement, ElementYML destinationElement, InputConnectionYML input) throws ApiException {
-		
 		ConnectionEntity conn = new ConnectionEntity();
 		conn.setRevision(getRevision());
 		ConnectionDTO dto = new ConnectionDTO();
@@ -372,36 +405,36 @@ public class ObjectBuilder {
 			String ffExpiration = castToString(input.properties.get(HelperYML.FLOW_FILE_EXPIRATION));
 			Object prioritizers = input.properties.get(HelperYML.PRIORITIZERS);
 
-			if (name != null && !name.isEmpty()) {
+			if (checkString(name)) {
 				dto.setName(name);
 			}
-			if (zIndex != null && !zIndex.isEmpty()) {
+			if (checkString(zIndex)) {
 				// TODO: Add checking and error logging
 				dto.setGetzIndex(Long.parseLong(zIndex));
 			}
-			if (labelIndex != null && !labelIndex.isEmpty()) {
+			if (checkString(labelIndex)) {
 				// TODO: Add checking and error logging
 				dto.setLabelIndex(Integer.parseInt(labelIndex));
 			}
-			if (bpObjThreshold != null && !bpObjThreshold.isEmpty()) {
+			if (checkString(bpObjThreshold)) {
 				// TODO: Add checking and error logging
 				dto.setBackPressureObjectThreshold(Long.parseLong(bpObjThreshold));
 			}
-			if (bpDataSizeThreshold != null && !bpDataSizeThreshold.isEmpty()) {
+			if (checkString(bpDataSizeThreshold)) {
 				dto.setBackPressureDataSizeThreshold(bpDataSizeThreshold);
 			}
-			if (lbStrategy != null && !lbStrategy.isEmpty()) {
+			if (checkString(lbStrategy)) {
 				// TODO: Add checking and error logging
 				dto.setLoadBalanceStrategy(LoadBalanceStrategyEnum.valueOf(lbStrategy));
 			}
-			if (lbPartition != null && !lbPartition.isEmpty()) {
+			if (checkString(lbPartition)) {
 				dto.setLoadBalancePartitionAttribute(lbPartition);
 			}
-			if (lbCompression != null && !lbCompression.isEmpty()) {
+			if (checkString(lbCompression)) {
 				// TODO: Add checking and error logging
 				dto.setLoadBalanceCompression(LoadBalanceCompressionEnum.valueOf(lbCompression));
 			}
-			if (ffExpiration != null && !ffExpiration.isEmpty()) {
+			if (checkString(ffExpiration)) {
 				dto.setFlowFileExpiration(ffExpiration);
 			}
 			if (prioritizers != null && prioritizers instanceof List) {
@@ -568,6 +601,10 @@ public class ObjectBuilder {
 	
 	private String castToString(Object o) {
 		return (o != null && o instanceof String) ? (String) o : null;
+	}
+	
+	private boolean checkString(String s) {
+		return s != null && !s.isEmpty();
 	}
 	
 	private class ProcessGroupStackElement {
