@@ -5,7 +5,7 @@ The purpose of this project is to create exports of NiFi workspaces that are eas
 Feature compliance is being validated against NiFi 1.8.0 API DAOs: [Link](https://github.com/apache/nifi/tree/rel/nifi-1.8.0/nifi-nar-bundles/nifi-framework-bundle/nifi-framework/nifi-web/nifi-web-api/src/main/java/org/apache/nifi/web/dao/impl)
   
   
-* Import (85% complete)
+* Import (95% complete)
   - [x] Generic
     - [x] Position
   - [x] Controllers
@@ -44,7 +44,7 @@ Feature compliance is being validated against NiFi 1.8.0 API DAOs: [Link](https:
     - [x] Comment
     - [x] Styles (Colors/Fonts)
     - [x] Width/Height
-  - [ ] Connectivity (Inputs/Outputs/Relationships) (90%)
+  - [x] Connectivity (Inputs/Outputs/Relationships)
     - [x] Name
     - [x] Queueing properties
       - flowFileExpiration, backPressureObjectThreshold, backPressureDataSizeThreshold, prioritizers
@@ -52,7 +52,7 @@ Feature compliance is being validated against NiFi 1.8.0 API DAOs: [Link](https:
     - [x] Link bends (aesthetic)
     - [x] Label Index (which bend the label goes on)
     - [x] Z index
-    - [ ] Links to/from RemoteProcessGroups
+    - [x] Links to/from RemoteProcessGroups
 * Export (100% functionally complete, stretch goals remaining)
   - [x] Generic
     - [x] Position
