@@ -8,24 +8,24 @@ Feature compliance is being validated against NiFi 1.8.0 API DAOs: [Link](https:
 * Import (60% complete)
   - [x] Generic
     - [x] Position
-  - [ ] Controllers
+  - [x] Controllers
     - [x] Name
     - [x] ~~Annotation Data (Field exists, but not sure what its for?)~~
     - [x] Comments
-    - [ ] Properties
-  - [ ] Processors
-    - [x] Name
-    - [ ] Styles (Colors/Fonts)
     - [x] Properties
-    - [ ] Annotation Data (advanced rules)
-    - [ ] Scheduling 
+  - [x] Processors
+    - [x] Name
+    - [x] Styles (Colors/Fonts)
+    - [x] Properties
+    - [x] Annotation Data (advanced rules)
+    - [x] Scheduling 
       - (schedulingStrategy, schedulingPeriod, maxTasks, penaltyDuration, yieldDuration, runDuration, executionNode)
-    - [ ] Bulletin Level
+    - [x] Bulletin Level
     - [x] Terminated relationships (auto terminating based on unused state)
     - [x] Comments
-  - [ ] Ports (Input/Output)
+  - [x] Ports (Input/Output)
     - [x] Name
-    - [ ] Comments
+    - [x] Comments
   - [x] Funnels
   - [x] Process Groups
     - [x] Name
