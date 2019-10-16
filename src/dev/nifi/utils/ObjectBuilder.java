@@ -10,6 +10,7 @@ import java.util.UUID;
 import org.apache.nifi.api.toolkit.ApiClient;
 import org.apache.nifi.api.toolkit.ApiException;
 import org.apache.nifi.api.toolkit.api.ProcessGroupsApi;
+import org.apache.nifi.api.toolkit.api.RemoteProcessGroupsApi;
 import org.apache.nifi.api.toolkit.model.*;
 import org.apache.nifi.api.toolkit.model.ConnectableDTO.TypeEnum;
 import org.apache.nifi.api.toolkit.model.ConnectionDTO.LoadBalanceCompressionEnum;
@@ -35,6 +36,7 @@ public class ObjectBuilder {
 
 	private final String clientId;
 	private final ProcessGroupsApi processGroupAPI;
+	private final RemoteProcessGroupsApi remoteProcessGroupAPI;
 	
 	// Stack of ProcessGroups that are being dealt with and the variables that are local to that stack only
 	private final Stack<ProcessGroupStackElement> processGroupStack = new Stack<ProcessGroupStackElement>();
@@ -46,6 +48,7 @@ public class ObjectBuilder {
 		this.clientId = clientId;
 		
 		processGroupAPI = new ProcessGroupsApi(apiClient);
+		remoteProcessGroupAPI = new RemoteProcessGroupsApi(apiClient);
 	}
 	
 	public void enterProcessGroup(String processGroupId) {
@@ -190,16 +193,59 @@ public class ObjectBuilder {
 				dto.setYieldDuration(yield);
 			}
 		}
-		
+
+		// NOTE: Remote Port configuration is done later when all information is available (must wait for RPG to detect remote ports)
 		RemoteProcessGroupEntity response = processGroupAPI.createRemoteProcessGroup(getProcessGroupId(), rpg);
 		
-		// TODO: Wait for the remote process to detect the remote ports
-		// TODO: Assign remote port properties once they have been detected
 		
 		// Track the newly created remote process group (old id -> new id)
 		tracker.track(ele.id, response.getId());
 		
 		return response;
+	}
+	
+	public void configureRemoteProcessGroupPorts(ElementYML ele, long maximumPollDuration) throws ApiException {
+		String newId = tracker.lookupByOldId(ele.id);
+		
+		long startTime = System.nanoTime();
+		RemoteProcessGroupEntity response = null;
+		
+		while ((System.nanoTime() - startTime) < maximumPollDuration) {
+			response = remoteProcessGroupAPI.getRemoteProcessGroup(newId);
+			
+			// If the flowrefreshed value has been set, all remote port info should be populated
+			if (response != null && response.getComponent() != null && response.getComponent().getFlowRefreshed() != null) {
+				// Stop polling when we know the port info is in the response object
+				break;
+			}
+			
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {}
+		}
+		
+		// Check if we successfully got a configured object or if a timeout occurred
+		if (response != null) {
+			if (response.getComponent() != null && response.getComponent().getContents() != null) {
+				RemoteProcessGroupContentsDTO  contents = response.getComponent().getContents();
+				
+				// Track any information about remote input ports ( Port name -> id)
+				if (contents.getInputPorts() != null) {
+					for (RemoteProcessGroupPortDTO port : contents.getInputPorts()) {
+						tracker.track(response.getId(), port.getName(), ReservedComponents.INPUT_PORT.name(), port.getId());
+					}
+				}
+				
+				// Track any information about remote output ports ( Port name -> id)
+				if (contents.getOutputPorts() != null) {
+					for (RemoteProcessGroupPortDTO port : contents.getOutputPorts()) {
+						tracker.track(response.getId(), port.getName(), ReservedComponents.OUTPUT_PORT.name(), port.getId());
+					}
+				}
+			}
+		} else {
+			// TODO: Log that we weren't able to get remote process group information
+		}
 	}
 	
 	public PortEntity makeOutputPort(ElementYML ele) throws ApiException {
@@ -482,7 +528,6 @@ public class ObjectBuilder {
 			type = TypeEnum.OUTPUT_PORT;
 		} else if (ReservedComponents.REMOTE_PROCESS_GROUP.isType(source.type)) {
 			type = TypeEnum.REMOTE_OUTPUT_PORT;
-			return null;
 		} else {
 			try {
 				type = TypeEnum.valueOf(source.type);
@@ -525,7 +570,6 @@ public class ObjectBuilder {
 			type = TypeEnum.INPUT_PORT;
 		} else if (ReservedComponents.REMOTE_PROCESS_GROUP.isType(destination.type)) {
 			type = TypeEnum.REMOTE_INPUT_PORT;
-			return null;
 		} else {
 			try {
 				type = TypeEnum.valueOf(destination.type);
@@ -613,7 +657,7 @@ public class ObjectBuilder {
 		public final String id;
 		
 		// Canonical type name -> (Type, Bundle)
-		public Map<String, Pair<String, BundleDTO>> dependencies;	
+		public Map<String, Pair<String, BundleDTO>> dependencies;
 
 		public ProcessGroupStackElement(String processGroupId) {
 			this.id = processGroupId;

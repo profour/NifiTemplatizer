@@ -14,6 +14,7 @@ public class ObjectTracker {
 	// GroupId -> Name -> TrackedObjects
 	private final Map<String, Map<String, Set<TrackedObject>>> groupedNameMap = new HashMap<>();
 	
+	// Old ID -> New ID
 	private final Map<String, String> idMapping = new HashMap<String, String>();
 	
 	public String lookupByOldId(String oldId) {

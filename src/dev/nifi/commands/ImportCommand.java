@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.nifi.api.toolkit.ApiException;
 import org.apache.nifi.api.toolkit.api.ProcessGroupsApi;
@@ -36,7 +37,7 @@ public class ImportCommand extends BaseCommand {
 	private final ProcessorsApi processorAPI = new ProcessorsApi(getApiClient());
 	
 	private final String importDir;
-	
+	private final long maximumPollDuration = TimeUnit.NANOSECONDS.convert(30, TimeUnit.SECONDS);
 	private final boolean developerMode;
 	
 	private ObjectBuilder builder = new ObjectBuilder(getApiClient(), getClientId());
@@ -111,6 +112,9 @@ public class ImportCommand extends BaseCommand {
 			// Create all of the canvas elements
 			createElements(template);
 			
+			// Configure any remote process groups
+			configureRemoteProcessGroups(template);
+			
 			// Linkage must run after create elements to ensure all src/dst pairs can be satisfied
 			createLinkage(template);
 			
@@ -124,32 +128,6 @@ public class ImportCommand extends BaseCommand {
 			builder.leaveProcessGroup();
 		}
 		
-	}
-	
-	private void createMetadataLabel(TemplateYML template) throws ApiException {
-		PositionDTO position = new PositionDTO();
-		position.setX(Double.MIN_VALUE);
-		position.setY(Double.MIN_VALUE);
-		
-		for (ElementYML element : template.components) {
-			if (element.position != null) {
-				PositionDTO pos = HelperYML.createPosition(element.position);
-				
-				position.setX(Math.max(position.getX(), pos.getX()));
-				position.setY(Math.max(position.getY(), pos.getY()));
-			}
-		}
-		position.setX(position.getX() + 500.0);
-		position.setY(position.getY() + 500.0);
-		
-		ElementYML metadataLabel = new ElementYML();
-		metadataLabel.comment = "Imported By NiFi Templatizer\n\nasdf\nsdfjkl\nwkerjl\nkewflkjwle\n";
-		metadataLabel.position = HelperYML.formatPosition(position.getX(), position.getY());
-		metadataLabel.styles.put(HelperYML.WIDTH, HelperYML.formatDoubleTruncated(175.0));
-		metadataLabel.styles.put(HelperYML.HEIGHT, HelperYML.formatDoubleTruncated(20.0));
-		metadataLabel.styles.put(HelperYML.BG_COLOR, "#465ff0");
-		
-		builder.makeLabel(metadataLabel);
 	}
 
 	private void createProcessGroups(TemplateYML template, Map<String, TemplateYML> templateDB) throws ApiException {
@@ -225,6 +203,19 @@ public class ImportCommand extends BaseCommand {
 		}
 	}
 	
+	private void configureRemoteProcessGroups(TemplateYML template) throws ApiException {
+
+		// TODO: Wait for the remote process to detect the remote ports
+		// TODO: Assign remote port properties once they have been detected
+		for (ElementYML ele : template.components) {
+			if (!ReservedComponents.REMOTE_PROCESS_GROUP.isType(ele.type)) {
+				continue;
+			}
+			
+			builder.configureRemoteProcessGroupPorts(ele, maximumPollDuration);
+		}
+	}
+	
 	private void createLinkage(TemplateYML template) throws ApiException {
 		
 		Map<String, Set<String>> usedRelationships = new HashMap<>();
@@ -287,6 +278,32 @@ public class ImportCommand extends BaseCommand {
 				processorAPI.updateProcessor(processor.getId(), processor);
 			}
 		}
+	}
+	
+	private void createMetadataLabel(TemplateYML template) throws ApiException {
+		PositionDTO position = new PositionDTO();
+		position.setX(Double.MIN_VALUE);
+		position.setY(Double.MIN_VALUE);
+		
+		for (ElementYML element : template.components) {
+			if (element.position != null) {
+				PositionDTO pos = HelperYML.createPosition(element.position);
+				
+				position.setX(Math.max(position.getX(), pos.getX()));
+				position.setY(Math.max(position.getY(), pos.getY()));
+			}
+		}
+		position.setX(position.getX() + 500.0);
+		position.setY(position.getY() + 500.0);
+		
+		ElementYML metadataLabel = new ElementYML();
+		metadataLabel.comment = "Imported By NiFi Templatizer\n\nasdf\nsdfjkl\nwkerjl\nkewflkjwle\n";
+		metadataLabel.position = HelperYML.formatPosition(position.getX(), position.getY());
+		metadataLabel.styles.put(HelperYML.WIDTH, HelperYML.formatDoubleTruncated(175.0));
+		metadataLabel.styles.put(HelperYML.HEIGHT, HelperYML.formatDoubleTruncated(20.0));
+		metadataLabel.styles.put(HelperYML.BG_COLOR, "#465ff0");
+		
+		builder.makeLabel(metadataLabel);
 	}
 	
 	// Tester main method
