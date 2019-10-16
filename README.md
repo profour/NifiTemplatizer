@@ -47,12 +47,12 @@ Feature compliance is being validated against NiFi 1.8.0 API DAOs: [Link](https:
     - [x] Width/Height
   - [ ] Connectivity (Inputs/Outputs/Relationships) (90%)
     - [x] Name
-    - [ ] Queueing properties
+    - [x] Queueing properties
       - flowFileExpiration, backPressureObjectThreshold, backPressureDataSizeThreshold, prioritizers
       - loadBalanceStrategy, loadBalancePartition, loadBalanceCompression
-    - [ ] Link bends (aesthetic)
-    - [ ] Label Index (which bend the label goes on)
-    - [ ] Z index
+    - [x] Link bends (aesthetic)
+    - [x] Label Index (which bend the label goes on)
+    - [x] Z index
     - [ ] Links to/from RemoteProcessGroups
 * Export (100% functionally complete, stretch goals remaining)
   - [x] Generic
