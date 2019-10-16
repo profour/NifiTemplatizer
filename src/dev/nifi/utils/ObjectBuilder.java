@@ -1,9 +1,11 @@
 package dev.nifi.utils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.UUID;
 
 import org.apache.nifi.api.toolkit.ApiClient;
 import org.apache.nifi.api.toolkit.ApiException;
@@ -11,11 +13,20 @@ import org.apache.nifi.api.toolkit.api.ProcessGroupsApi;
 import org.apache.nifi.api.toolkit.model.*;
 import org.apache.nifi.api.toolkit.model.ConnectableDTO.TypeEnum;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+
+import dev.nifi.xml.Actions;
+import dev.nifi.xml.Conditions;
+import dev.nifi.xml.Criteria;
+import dev.nifi.xml.Rules;
 import dev.nifi.yml.ControllerYML;
 import dev.nifi.yml.ElementYML;
 import dev.nifi.yml.HelperYML;
 import dev.nifi.yml.HelperYML.ReservedComponents;
 import dev.nifi.yml.InputConnectionYML;
+import dev.nifi.yml.RuleYML;
+import dev.nifi.yml.RulesYML;
 import dev.nifi.yml.TemplateYML;
 
 public class ObjectBuilder {
@@ -64,15 +75,14 @@ public class ObjectBuilder {
 		ControllerServiceDTO dto = new ControllerServiceDTO();
 		cont.setComponent(dto);
 		cont.setRevision(getRevision());
-		dto.setName(controller.name);
 		
 		// Lookup the typing for this based on the canonical type
 		Pair<String, BundleDTO> dep = this.lookup(controller.getType());
 		dto.setBundle(dep.t2);
 		dto.setType(dep.t1);
 		
-		// Store the old versioned id so the export can be recreated
-		dto.setVersionedComponentId(controller.id);
+
+		dto.setName(controller.name);
 		
 		if (controller.properties != null) {
 			Map<String, String> props = new HashMap<String, String>();
@@ -95,8 +105,6 @@ public class ObjectBuilder {
 		FunnelDTO dto = new FunnelDTO();
 		funnel.setComponent(dto);
 		funnel.setRevision(getRevision());
-		
-		dto.setVersionedComponentId(ele.id);
 
 		PositionDTO position = HelperYML.createPosition(ele.position);
 		dto.setPosition(position);
@@ -123,7 +131,6 @@ public class ObjectBuilder {
 		
 		// All additional properties must be set after the initial create
 		newProcessGroup.getComponent().setComments(ele.comment);
-		newProcessGroup.getComponent().setVersionedComponentId(ele.id);
 		ProcessGroupEntity response = processGroupAPI.updateProcessGroup(newProcessGroup.getId(), newProcessGroup);
 
 		// Track the newly created processgroup (old id -> new id)
@@ -137,8 +144,6 @@ public class ObjectBuilder {
 		RemoteProcessGroupDTO dto = new RemoteProcessGroupDTO();
 		rpg.setComponent(dto);
 		rpg.setRevision(getRevision());
-		
-		dto.setVersionedComponentId(ele.id);
 		
 		RemoteProcessGroupContentsDTO contentsDTO = new RemoteProcessGroupContentsDTO();
 		dto.setContents(contentsDTO);
@@ -165,8 +170,7 @@ public class ObjectBuilder {
 		PositionDTO position = HelperYML.createPosition(ele.position);
 		dto.setPosition(position);
 		dto.setName(ele.name);
-		
-		dto.setVersionedComponentId(ele.id);
+		dto.setComments(ele.comment);
 		
 		PortEntity response = processGroupAPI.createOutputPort(getProcessGroupId(), port);
 		
@@ -187,8 +191,7 @@ public class ObjectBuilder {
 		PositionDTO position = HelperYML.createPosition(ele.position);
 		dto.setPosition(position);
 		dto.setName(ele.name);
-		
-		dto.setVersionedComponentId(ele.id);
+		dto.setComments(ele.comment);
 		
 		PortEntity response = processGroupAPI.createInputPort(getProcessGroupId(), port);
 
@@ -209,8 +212,6 @@ public class ObjectBuilder {
 		PositionDTO position = HelperYML.createPosition(ele.position);
 		dto.setPosition(position);
 		dto.setLabel(ele.comment);
-		
-		dto.setVersionedComponentId(ele.id);
 
 		if (ele.styles != null) {
 			if (ele.styles.containsKey(HelperYML.WIDTH)) {
@@ -243,19 +244,19 @@ public class ObjectBuilder {
 		Pair<String, BundleDTO> dependency = this.lookup(element.getType());
 		dto.setType(dependency.t1);
 		dto.setBundle(dependency.t2);
+		
 		dto.setName(element.name);
-		PositionDTO position = HelperYML.createPosition(element.position);
-		dto.setPosition(position);
+		dto.setPosition(HelperYML.createPosition(element.position));
+		dto.setStyle(element.styles);
 		
-		dto.setVersionedComponentId(element.id);
-		
-		// Update UUID references in properties
+		// Set any properties that may have changed from default
 		if (element.properties != null) {
 			for (String key : element.properties.keySet()) {
 				Object val = element.properties.get(key);
 				if (val instanceof String) {
 					String v = (String) val;
 					
+					// Update UUID references in properties
 					String lookup = tracker.lookupByOldId(v);
 					if (lookup != null) {
 						element.properties.put(key, lookup);
@@ -264,6 +265,51 @@ public class ObjectBuilder {
 			}
 			
 			dto.getConfig().setProperties(element.properties);
+		}
+		
+		// Check if there are any scheduling properties that need to be assigned
+		if (element.scheduling != null && !element.scheduling.isEmpty()) {
+
+			String schedulingPeriod = element.scheduling.get(HelperYML.SCHEDULING_PERIOD);
+			String schedulingStrategy = element.scheduling.get(HelperYML.SCHEDULING_STRATEGY);
+			String maxTasks = element.scheduling.get(HelperYML.SCHEDULABLE_TASK_COUNT); // Integer
+			String penaltyDuration = element.scheduling.get(HelperYML.PENALTY_DURATION);
+			String yieldDuration = element.scheduling.get(HelperYML.YIELD_DURATION);
+			String runDuration = element.scheduling.get(HelperYML.RUN_DURATION); // Long
+			String executionNode = element.scheduling.get(HelperYML.EXECUTION_NODE);
+			String bulletinLevel = element.scheduling.get(HelperYML.BULLETIN_LEVEL);
+			
+			if (schedulingPeriod != null && !schedulingPeriod.isEmpty()) {
+				dto.getConfig().setSchedulingPeriod(schedulingPeriod);
+			}
+			if (schedulingStrategy != null && !schedulingStrategy.isEmpty()) {
+				dto.getConfig().setSchedulingStrategy(schedulingStrategy);
+			}
+			if (maxTasks != null && !maxTasks.isEmpty()) {
+				dto.getConfig().setConcurrentlySchedulableTaskCount(Integer.parseInt(maxTasks));
+			}
+			if (penaltyDuration != null && !penaltyDuration.isEmpty()) {
+				dto.getConfig().setPenaltyDuration(penaltyDuration);
+			}
+			if (yieldDuration != null && !yieldDuration.isEmpty()) {
+				dto.getConfig().setYieldDuration(yieldDuration);
+			}
+			if (runDuration != null && !runDuration.isEmpty()) {
+				dto.getConfig().setRunDurationMillis(Long.parseLong(runDuration));
+			}
+			if (executionNode != null && !executionNode.isEmpty()) {
+				dto.getConfig().setExecutionNode(executionNode);
+			}
+			if (bulletinLevel != null && !bulletinLevel.isEmpty()) {
+				dto.getConfig().setBulletinLevel(bulletinLevel);
+			}
+		}
+		
+		// Check if there is any annotation data (advanced rules)
+		if (element.advanced != null) {
+			String annotationData = makeAnnotationData(element.advanced);
+			
+			dto.getConfig().setAnnotationData(annotationData);
 		}
 		
 		ProcessorEntity response = processGroupAPI.createProcessor(getProcessGroupId(), p);
@@ -284,10 +330,10 @@ public class ObjectBuilder {
 		// Set the source & destination of the connection
 		ConnectableDTO src = makeSourceConnectable(sourceElement, input.from);
 		ConnectableDTO dst = makeDestinationConnectable(destinationElement, input.to);
-		System.out.println("======");
-		System.out.println(src);
-		System.out.println(dst);
+
+		// If we weren't able to make src or dst connections, something bad happened (or a remote process didn't detect remote ports yet)
 		if (src == null || dst == null) {
+			// TODO: add proper logging
 			return null;
 		}
 		dto.setSource(src);
@@ -391,7 +437,57 @@ public class ObjectBuilder {
 		
 		return connectable;
 	}
+	
+	private String makeAnnotationData(RulesYML rules) {
+		XmlMapper xmlMapper = new XmlMapper();
 		
+		// Reconstruct the original criteria object from the YML formatted rules
+		Criteria criteria = new Criteria();
+		
+		// initialize top level values
+		criteria.rules = new ArrayList<>();
+		criteria.flowFilePolicy = rules.policy;
+		
+		// Iterate over all yml Rules and convert them to the XML DTO class format
+		// NOTE: Generating the ID's is important, otherwise the API has issues with the data
+		for (RuleYML rule : rules.rules) {
+			Rules newRule = new Rules();
+			
+			newRule.conditions = new ArrayList<>();
+			newRule.actions = new ArrayList<>();
+			newRule.name = rule.name;
+			newRule.id = UUID.randomUUID().toString();
+
+			if (rule.conditions != null) {
+				for (String condition : rule.conditions) {
+					Conditions newCondition = new Conditions();
+					newCondition.expression = condition;
+					newCondition.id = UUID.randomUUID().toString();
+					newRule.conditions.add(newCondition);
+				}
+			}
+			if (rule.actions != null) {
+				for (String key : rule.actions.keySet()) {
+					Actions newAction = new Actions();
+					newAction.attribute = key;
+					newAction.value = rule.actions.get(key);
+					newAction.id = UUID.randomUUID().toString();
+					newRule.actions.add(newAction);
+				}
+			}
+			
+			criteria.rules.add(newRule);
+		}
+		
+		// Attempt to write the data out to XML
+		try {
+			return xmlMapper.writeValueAsString(criteria);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+	}
 	
 	private RevisionDTO getRevision() {
 		RevisionDTO rev = new RevisionDTO();

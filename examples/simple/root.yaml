@@ -111,12 +111,14 @@ components:
   advanced:
     policy: USE_CLONE
     rules:
-    - conditions:
+    - name: Test double rule
+      conditions:
       - ${asdf2:equals("true")}
       - ${asdf:equals("true")}
       actions:
         newValue: asdf!
-    - conditions:
+    - name: Simple test
+      conditions:
       - ${asdf2:equals("false")}
       actions:
         otherValue: asdf@

@@ -11,6 +11,11 @@ import dev.nifi.xml.Conditions;
 public class RuleYML {
 
 	/**
+	 * Name of the rule
+	 */
+	public String name;
+	
+	/**
 	 * List of conditions that must all evaluate to true in order for a rule to pass
 	 */
 	public List<String> conditions = new ArrayList<String>();
@@ -25,7 +30,8 @@ public class RuleYML {
 	 */
 	public RuleYML() {}
 
-	public RuleYML(List<Conditions> conditions, List<Actions> actions) {
+	public RuleYML(String name, List<Conditions> conditions, List<Actions> actions) {
+		this.name = name;
 		for (Conditions c : conditions) {
 			this.conditions.add(c.expression);
 		}

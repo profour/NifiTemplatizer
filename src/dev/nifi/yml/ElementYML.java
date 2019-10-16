@@ -360,7 +360,7 @@ public class ElementYML {
 			Criteria criteria = xmlMapper.readValue(xmlAnnotations, Criteria.class);
 
 			for (Rules rule : criteria.rules) {
-				RuleYML r = new RuleYML(rule.conditions, rule.actions);
+				RuleYML r = new RuleYML(rule.name, rule.conditions, rule.actions);
 				rules.add(r);
 			}
 
